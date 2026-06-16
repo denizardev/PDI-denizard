@@ -1,199 +1,234 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PDI · QA & Segurança · Denizard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --base:#0D0A0B;
-  --surface:#141010;
-  --surface-2:#1C1618;
-  --surface-3:#231C1E;
-  --ink:#EDE8DF;
-  --ink-2:#B8B0A6;
-  --ink-3:#6E6660;
-  --line:#2A2022;
-  --line-2:#362830;
-  --wine:#8B1A3A;
-  --wine-dim:rgba(139,26,58,0.12);
-  --wine-mid:rgba(139,26,58,0.28);
-  --wine-bright:#A8224A;
-  --amber:#C4853A;
-  --amber-dim:rgba(196,133,58,0.10);
-  --amber-mid:rgba(196,133,58,0.22);
-  --sage:#4A7A5A;
-  --sage-dim:rgba(74,122,90,0.10);
-  --slate:#3A5A7A;
-  --slate-dim:rgba(58,90,122,0.10);
-  --ease:cubic-bezier(0.16,1,0.3,1);
-  --font-display:'Fraunces',Georgia,serif;
-  --font-body:'DM Sans',sans-serif;
-  --font-mono:'DM Mono',monospace;
-  --fs-base:16.5px;
-  --fs-sm:13.5px;
-  --fs-label:11px;
-  --fs-task:13.5px;
+:root[data-theme="dark"]{
+  --bg:#0D0A0B;--surface:#141010;--surface-2:#1C1618;--surface-3:#231C1E;
+  --ink:#EDE8DF;--ink-2:#B8B0A6;--ink-3:#6E6660;
+  --line:#2A2022;--line-2:#362830;
+  --wine:#8B1A3A;--wine-dim:rgba(139,26,58,0.12);--wine-mid:rgba(139,26,58,0.28);--wine-bright:#A8224A;
+  --amber:#C4853A;--amber-dim:rgba(196,133,58,0.10);--amber-mid:rgba(196,133,58,0.22);
+  --teal:#2E7D6B;--teal-dim:rgba(46,125,107,0.10);
+  --purple:#7B6DD8;--purple-dim:rgba(123,109,216,0.10);
+  --orange:#C4623A;--orange-dim:rgba(196,98,58,0.10);
+  --lavender:#9B59B6;--lavender-dim:rgba(155,89,182,0.10);--lavender-mid:rgba(155,89,182,0.24);
+}
+:root[data-theme="light"]{
+  --bg:#F7F4EF;--surface:#EEEAE2;--surface-2:#E5E0D6;--surface-3:#DDD8CE;
+  --ink:#1A1614;--ink-2:#4A4440;--ink-3:#8A8480;
+  --line:#D8D2C8;--line-2:#C8C0B4;
+  --wine:#8B1A3A;--wine-dim:rgba(139,26,58,0.07);--wine-mid:rgba(139,26,58,0.2);--wine-bright:#7A1633;
+  --amber:#A06820;--amber-dim:rgba(160,104,32,0.08);--amber-mid:rgba(160,104,32,0.2);
+  --teal:#1E6A58;--teal-dim:rgba(30,106,88,0.08);
+  --purple:#5A4EC0;--purple-dim:rgba(90,78,192,0.08);
+  --orange:#A84820;--orange-dim:rgba(168,72,32,0.08);
+  --lavender:#7B3A9E;--lavender-dim:rgba(123,58,158,0.08);--lavender-mid:rgba(123,58,158,0.2);
 }
 html{scroll-behavior:smooth}
-body{background:var(--base);color:var(--ink);font-family:var(--font-body);font-size:var(--fs-base);line-height:1.6;font-weight:300;-webkit-font-smoothing:antialiased}
-.page{max-width:1020px;margin:0 auto;padding:0 32px 120px}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:16.5px;line-height:1.6;font-weight:300;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+.page{max-width:1040px;margin:0 auto;padding:0 28px 100px}
+
+/* TOP NAV */
+.topnav{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;margin-bottom:8px;
+  background:var(--bg);border-bottom:1px solid var(--line);
+  transition:background 0.3s;
+}
+.back-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;
+  color:var(--ink-3);text-decoration:none;
+  padding:6px 12px;border:1px solid var(--line-2);border-radius:2px;
+  transition:all 0.2s;
+}
+.back-btn:hover{border-color:var(--wine);color:var(--wine-bright);background:var(--wine-dim)}
+.topnav-right{display:flex;align-items:center;gap:8px}
+.theme-toggle{
+  width:34px;height:34px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--line-2);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:14px;transition:all 0.2s;
+}
+.theme-toggle:hover{border-color:var(--wine)}
+.page-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-3)}
 
 /* HERO */
-.hero{display:grid;grid-template-columns:1fr auto;gap:0 48px;align-items:end;padding:72px 0 56px;border-bottom:1px solid var(--line);margin-bottom:64px}
-.hero-eyebrow{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.18em;text-transform:uppercase;color:var(--wine-bright);margin-bottom:8px;display:flex;align-items:center;gap:10px;opacity:0;animation:fadeUp 0.6s var(--ease) 0.1s forwards}
+.hero{display:grid;grid-template-columns:1fr auto;gap:0 48px;align-items:end;padding:56px 0 48px;border-bottom:1px solid var(--line);margin-bottom:56px}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--wine-bright);margin-bottom:8px;display:flex;align-items:center;gap:10px;opacity:0;animation:fadeUp 0.6s ease 0.1s forwards}
 .hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--wine-bright)}
-.hero-plan-badge{font-family:var(--font-mono);font-size:var(--fs-label);color:var(--ink-3);background:var(--surface-2);border:1px solid var(--line-2);padding:4px 12px;border-radius:2px;margin-bottom:20px;display:inline-block;opacity:0;animation:fadeUp 0.6s var(--ease) 0.15s forwards}
-.hero h1{font-family:var(--font-display);font-size:clamp(44px,6vw,68px);font-weight:300;line-height:1.0;letter-spacing:-0.02em;margin-bottom:16px;opacity:0;animation:fadeUp 0.7s var(--ease) 0.2s forwards}
+.hero-plan-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-3);background:var(--surface-2);border:1px solid var(--line-2);padding:4px 12px;border-radius:2px;margin-bottom:20px;display:inline-block;opacity:0;animation:fadeUp 0.5s ease 0.15s forwards}
+.hero h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(40px,6vw,64px);font-weight:300;line-height:1.0;letter-spacing:-0.02em;margin-bottom:16px;opacity:0;animation:fadeUp 0.7s ease 0.2s forwards}
 .hero h1 em{font-style:italic;color:var(--wine-bright)}
-.hero-desc{font-size:var(--fs-sm);color:var(--ink-2);max-width:500px;line-height:1.8;opacity:0;animation:fadeUp 0.7s var(--ease) 0.3s forwards}
-.hero-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:24px;opacity:0;animation:fadeUp 0.7s var(--ease) 0.4s forwards}
-.chip{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.05em;padding:5px 12px;border:1px solid var(--line-2);border-radius:2px;color:var(--ink-3);transition:all 0.2s var(--ease)}
-.chip:hover{border-color:var(--ink-3);color:var(--ink-2)}
+.hero-desc{font-size:13.5px;color:var(--ink-2);max-width:480px;line-height:1.8;opacity:0;animation:fadeUp 0.7s ease 0.3s forwards}
+.hero-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px;opacity:0;animation:fadeUp 0.7s ease 0.38s forwards}
+.chip{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.05em;padding:4px 11px;border:1px solid var(--line-2);border-radius:2px;color:var(--ink-3);transition:all 0.2s}
 .chip.hi{border-color:var(--wine);color:var(--wine-bright);background:var(--wine-dim)}
-.hero-aside{text-align:right;opacity:0;animation:fadeUp 0.7s var(--ease) 0.25s forwards}
-.hero-big{font-family:var(--font-display);font-size:clamp(80px,13vw,148px);font-weight:300;line-height:1;letter-spacing:-0.04em;color:var(--line-2);user-select:none;transition:color 0.4s var(--ease);cursor:default}
+.hero-aside{text-align:right;opacity:0;animation:fadeUp 0.7s ease 0.25s forwards}
+.hero-big{font-family:'Fraunces',Georgia,serif;font-size:clamp(80px,13vw,140px);font-weight:300;line-height:1;letter-spacing:-0.04em;color:var(--line-2);user-select:none;transition:color 0.4s;cursor:default}
 .hero-big:hover{color:var(--wine-bright)}
-.hero-big-sub{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.1em;color:var(--ink-3);text-transform:uppercase;margin-top:4px}
-.hero-plan-track{display:flex;gap:4px;justify-content:flex-end;margin-top:12px}
+.hero-big-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--ink-3);text-transform:uppercase;margin-top:4px}
+.hero-plan-track{display:flex;gap:4px;justify-content:flex-end;margin-top:10px}
 .plan-dot{width:24px;height:3px;border-radius:1px;background:var(--line-2)}
 .plan-dot.active{background:var(--wine)}
 
 /* SECTION LABEL */
-.sec-label{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.sec-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:20px;display:flex;align-items:center;gap:12px}
 .sec-label::after{content:'';flex:1;height:1px;background:var(--line)}
 
 /* VERSION BAR */
-.version-bar{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.08em;color:var(--wine-bright);background:var(--wine-dim);border:1px solid var(--wine-mid);padding:7px 15px;border-radius:2px;margin-bottom:48px;opacity:0;animation:fadeUp 0.6s var(--ease) 0.5s forwards}
+.version-bar{display:inline-flex;align-items:center;gap:10px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.08em;color:var(--wine-bright);background:var(--wine-dim);border:1px solid var(--wine-mid);padding:7px 15px;border-radius:2px;margin-bottom:48px;opacity:0;animation:fadeUp 0.6s ease 0.5s forwards}
 .pulse{width:6px;height:6px;border-radius:50%;background:var(--wine-bright);animation:blink 2s ease-in-out infinite}
 
 /* LEGEND */
-.legend-row{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--line);opacity:0;animation:fadeUp 0.6s var(--ease) 0.55s forwards}
-.leg{display:flex;align-items:center;gap:7px;font-size:var(--fs-sm);color:var(--ink-3)}
+.legend-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:36px;padding-bottom:24px;border-bottom:1px solid var(--line);opacity:0;animation:fadeUp 0.6s ease 0.55s forwards}
+.leg{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-3)}
 .leg-mark{width:16px;height:2px}
 
 /* QUARTERS */
 .quarters{display:flex;flex-direction:column;gap:10px;margin-bottom:64px}
-.quarter{border:1px solid var(--line);border-radius:3px;overflow:hidden;background:transparent;transition:border-color 0.2s var(--ease);opacity:0}
-.quarter.visible{animation:fadeUp 0.55s var(--ease) forwards}
+.quarter{border:1px solid var(--line);border-radius:3px;overflow:hidden;transition:border-color 0.2s;opacity:0}
+.quarter.visible{animation:fadeUp 0.5s ease forwards}
 .quarter:hover{border-color:var(--line-2)}
 details[open].quarter{border-color:var(--wine)}
-
-.q-summary{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:16px;padding:18px 22px;cursor:pointer;list-style:none;transition:background 0.15s}
+.q-summary{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:14px;padding:17px 20px;cursor:pointer;list-style:none;transition:background 0.15s}
 .q-summary:hover{background:var(--surface)}
 .q-summary::-webkit-details-marker{display:none}
-
-.q-tag{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.08em;padding:4px 11px;border-radius:2px;white-space:nowrap}
+.q-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.08em;padding:4px 10px;border-radius:2px;white-space:nowrap}
 .t-q1{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
 .t-q2{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
-.t-q3{background:var(--sage-dim);color:var(--sage);border:1px solid rgba(74,122,90,0.25)}
-.t-q4{background:var(--slate-dim);color:var(--slate);border:1px solid rgba(58,90,122,0.25)}
-
-.q-info .q-name{font-size:var(--fs-base);font-weight:500;letter-spacing:-0.01em;color:var(--ink)}
-.q-info .q-sub{font-size:var(--fs-sm);color:var(--ink-3);margin-top:2px;font-family:var(--font-mono)}
-
-.q-progress-wrap{display:flex;align-items:center;gap:8px;min-width:100px}
+.t-q3{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(46,125,107,0.25)}
+.t-q4{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(123,109,216,0.25)}
+.q-info .q-name{font-size:15px;font-weight:500;letter-spacing:-0.01em}
+.q-info .q-sub{font-size:12px;color:var(--ink-3);margin-top:2px;font-family:'DM Mono',monospace}
+.q-progress-wrap{display:flex;align-items:center;gap:8px;min-width:90px}
 .q-progress-bar{flex:1;height:2px;background:var(--line-2);border-radius:1px;overflow:hidden}
-.q-progress-fill{height:100%;background:var(--wine);border-radius:1px;transition:width 0.5s var(--ease);width:0%}
-.q-progress-pct{font-family:var(--font-mono);font-size:var(--fs-label);color:var(--ink-3);white-space:nowrap}
-
-.q-chevron{color:var(--ink-3);font-size:16px;transition:transform 0.3s var(--ease);flex-shrink:0}
+.q-progress-fill{height:100%;background:var(--wine);transition:width 0.5s ease;width:0%}
+.q-progress-pct{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-3);white-space:nowrap}
+.q-chevron{color:var(--ink-3);font-size:16px;transition:transform 0.3s ease;flex-shrink:0}
 details[open] .q-chevron{transform:rotate(180deg)}
-.q-body{padding:0 22px 24px;background:var(--surface)}
+.q-body{padding:0 20px 22px;background:var(--surface)}
 
-/* PILLARS - 5 col grid */
-.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:2px;overflow:hidden;margin:8px 0 16px}
-.pillar{background:var(--base);padding:16px 14px;border-top:2px solid transparent;transition:background 0.2s}
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:2px;overflow:hidden;margin:8px 0 14px}
+.pillar{background:var(--bg);padding:14px 13px;border-top:2px solid transparent;transition:background 0.2s}
 .pillar:hover{background:var(--surface-2)}
-
-.p-skill {border-top-color:var(--wine)}
-.p-pw    {border-top-color:#5B3DAE}
-.p-k6    {border-top-color:var(--amber)}
-.p-biz   {border-top-color:#2E7D6B}
-.p-sec   {border-top-color:#7A3A22}
-
-.p-title{font-family:var(--font-mono);font-size:var(--fs-label);font-weight:500;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px}
+.p-skill{border-top-color:var(--wine)}
+.p-pw   {border-top-color:var(--purple)}
+.p-k6   {border-top-color:var(--amber)}
+.p-biz  {border-top-color:var(--teal)}
+.p-sec  {border-top-color:var(--orange)}
+.p-title{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px}
 .p-skill .p-title{color:var(--wine-bright)}
-.p-pw    .p-title{color:#7B6DD8}
-.p-k6    .p-title{color:var(--amber)}
-.p-biz   .p-title{color:#3A9D85}
-.p-sec   .p-title{color:#C4623A}
-
-.status-row{margin-bottom:8px}
-.status-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;padding:2px 8px;border-radius:2px;text-transform:uppercase}
+.p-pw   .p-title{color:var(--purple)}
+.p-k6   .p-title{color:var(--amber)}
+.p-biz  .p-title{color:var(--teal)}
+.p-sec  .p-title{color:var(--orange)}
+.status-row{margin-bottom:7px}
+.status-badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;padding:2px 7px;border-radius:2px;text-transform:uppercase}
 .s-current{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
 .s-pending{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
 .s-locked {background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line-2)}
-.s-new    {background:rgba(46,125,107,0.10);color:#3A9D85;border:1px solid rgba(46,125,107,0.22)}
-
-/* TASKS */
+.s-new    {background:var(--teal-dim);color:var(--teal);border:1px solid rgba(46,125,107,0.22)}
 .task-list{list-style:none}
-.task-item{display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:opacity 0.2s}
+.task-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);cursor:pointer}
 .task-item:last-child{border-bottom:none}
-.task-check{width:14px;height:14px;border:1px solid var(--line-2);border-radius:2px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all 0.2s var(--ease)}
+.task-check{width:13px;height:13px;border:1px solid var(--line-2);border-radius:2px;flex-shrink:0;margin-top:3px;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all 0.2s}
 .task-item:hover .task-check{border-color:var(--ink-3)}
 .task-item.done .task-check{background:var(--wine);border-color:var(--wine);color:var(--ink)}
 .task-item.done .task-text{text-decoration:line-through;opacity:0.38}
-.task-text{font-size:var(--fs-task);color:var(--ink-2);line-height:1.5}
+.task-text{font-size:13px;color:var(--ink-2);line-height:1.5}
 .task-text a{color:inherit;text-decoration:underline;text-decoration-color:var(--line-2);transition:color 0.2s}
 .task-text a:hover{color:var(--wine-bright)}
-
-/* KPIs */
-.kpis{display:flex;flex-wrap:wrap;gap:6px;padding-top:14px;border-top:1px solid var(--line)}
-.kpi{font-family:var(--font-mono);font-size:var(--fs-label);padding:5px 11px;border-radius:2px;display:flex;align-items:center;gap:4px}
+.kpis{display:flex;flex-wrap:wrap;gap:5px;padding-top:12px;border-top:1px solid var(--line)}
+.kpi{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:2px;display:flex;align-items:center;gap:4px}
 .kpi::before{content:'✓'}
 .kpi-skill{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
-.kpi-pw  {background:rgba(91,61,174,0.08);color:#7B6DD8;border:1px solid rgba(91,61,174,0.18)}
+.kpi-pw  {background:var(--purple-dim);color:var(--purple);border:1px solid rgba(123,109,216,0.2)}
 .kpi-k6  {background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
-.kpi-biz {background:rgba(46,125,107,0.08);color:#3A9D85;border:1px solid rgba(46,125,107,0.18)}
-.kpi-sec {background:rgba(122,58,34,0.08);color:#C4623A;border:1px solid rgba(122,58,34,0.18)}
+.kpi-biz {background:var(--teal-dim);color:var(--teal);border:1px solid rgba(46,125,107,0.2)}
+.kpi-sec {background:var(--orange-dim);color:var(--orange);border:1px solid rgba(196,98,58,0.2)}
+
+/* ACTIVITIES */
+.activities-section{margin-bottom:56px}
+.activities-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.activity-card{background:var(--surface);border:1px solid var(--line-2);border-radius:3px;padding:16px 18px;display:flex;align-items:flex-start;gap:12px}
+.activity-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dot-active{background:var(--wine-bright);box-shadow:0 0 6px var(--wine-bright)}
+.dot-done{background:var(--teal)}
+.activity-content{}
+.activity-title{font-size:13.5px;font-weight:400;margin-bottom:3px}
+.activity-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-3)}
+.activity-tag{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:1px;display:inline-block;margin-top:5px}
+.tag-active{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
+.tag-done  {background:var(--teal-dim);color:var(--teal);border:1px solid rgba(46,125,107,0.22)}
+
+/* PROJECTS */
+.projects-section{margin-bottom:56px}
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.project-card{background:var(--surface);border:1px solid var(--line-2);border-radius:3px;padding:18px;transition:border-color 0.2s,transform 0.2s}
+.project-card:hover{border-color:var(--wine);transform:translateY(-2px)}
+.project-card a{text-decoration:none;color:inherit}
+.project-type{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+.project-name{font-size:14px;font-weight:500;margin-bottom:6px;color:var(--ink)}
+.project-desc{font-size:12.5px;color:var(--ink-2);line-height:1.55;margin-bottom:10px}
+.project-link{font-family:'DM Mono',monospace;font-size:10px;color:var(--wine-bright);display:flex;align-items:center;gap:4px}
+.project-stack{display:flex;flex-wrap:wrap;gap:4px}
+.stack-tag{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:1px;background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line-2)}
 
 /* NOTES */
-.notes-section{margin-top:56px;margin-bottom:56px}
-.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.note-block{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:20px}
-.note-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
-.note-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--fs-label);font-weight:500;flex-shrink:0}
-.note-avatar.el{background:var(--wine-dim);border:1px solid var(--wine-mid);color:var(--wine-bright)}
-.note-avatar.er{background:var(--amber-dim);border:1px solid var(--amber-mid);color:var(--amber)}
-.note-info .note-name{font-size:var(--fs-base);font-weight:500;color:var(--ink)}
-.note-info .note-role{font-family:var(--font-mono);font-size:var(--fs-label);color:var(--ink-3);margin-top:2px}
-.note-focus{font-family:var(--font-mono);font-size:var(--fs-label);margin-top:6px;padding:5px 10px;border-radius:2px;line-height:1.5}
-.note-focus.el{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
-.note-focus.er{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
-.note-area{width:100%;min-height:120px;background:var(--base);border:1px solid var(--line);border-radius:2px;padding:12px;font-family:var(--font-body);font-size:var(--fs-sm);color:var(--ink);resize:vertical;outline:none;line-height:1.6;transition:border-color 0.2s}
+.notes-section{margin-bottom:56px}
+.notes-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.note-block{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:18px}
+.note-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.note-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;flex-shrink:0}
+.av-larissa{background:var(--lavender-dim);border:1px solid var(--lavender-mid);color:var(--lavender)}
+.av-elton  {background:var(--wine-dim);border:1px solid var(--wine-mid);color:var(--wine-bright)}
+.av-eric   {background:var(--amber-dim);border:1px solid var(--amber-mid);color:var(--amber)}
+.note-info .note-name{font-size:14px;font-weight:500}
+.note-info .note-role{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-3);margin-top:2px}
+.note-focus{font-family:'DM Mono',monospace;font-size:10px;margin-top:5px;padding:4px 9px;border-radius:2px;line-height:1.5}
+.nf-larissa{background:var(--lavender-dim);color:var(--lavender);border:1px solid var(--lavender-mid)}
+.nf-elton  {background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
+.nf-eric   {background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
+.note-area{width:100%;min-height:110px;background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:11px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);resize:vertical;outline:none;line-height:1.6;transition:border-color 0.2s}
 .note-area:focus{border-color:var(--wine)}
 .note-area::placeholder{color:var(--ink-3)}
-.note-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-.note-save-btn{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.06em;padding:5px 12px;border:1px solid var(--line-2);border-radius:2px;background:transparent;color:var(--ink-3);cursor:pointer;transition:all 0.2s}
+.note-footer{display:flex;justify-content:space-between;align-items:center;margin-top:7px}
+.note-save-btn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.06em;padding:5px 11px;border:1px solid var(--line-2);border-radius:2px;background:transparent;color:var(--ink-3);cursor:pointer;transition:all 0.2s}
 .note-save-btn:hover{border-color:var(--wine);color:var(--wine-bright);background:var(--wine-dim)}
-.note-saved-msg{font-family:var(--font-mono);font-size:var(--fs-label);color:var(--wine-bright);opacity:0;transition:opacity 0.3s}
+.note-saved-msg{font-family:'DM Mono',monospace;font-size:10px;color:var(--wine-bright);opacity:0;transition:opacity 0.3s}
 .note-saved-msg.show{opacity:1}
+.note-loading{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-3)}
 
 /* ROADMAP */
-.roadmap{border:1px solid var(--line);border-radius:3px;padding:24px 28px;background:var(--surface);opacity:0;animation:fadeUp 0.6s var(--ease) 0.2s forwards}
-.roadmap-label{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
-.roadmap-sub{font-size:var(--fs-sm);color:var(--ink-3);margin-bottom:16px}
+.roadmap{border:1px solid var(--line);border-radius:3px;padding:22px 26px;background:var(--surface);margin-bottom:56px}
+.roadmap-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+.roadmap-sub{font-size:13px;color:var(--ink-3);margin-bottom:14px}
 .roadmap-track{display:flex;align-items:center;flex-wrap:wrap;gap:0}
-.rs{font-size:var(--fs-sm);font-weight:500;padding:8px 16px;border-radius:2px;white-space:nowrap}
-.rs.now {background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
-.rs.mid {background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
-.rs.far {background:transparent;color:var(--ink-3);border:1px solid var(--line)}
-.rs-sep {color:var(--line-2);padding:0 10px;font-size:18px}
+.rs{font-size:13px;font-weight:500;padding:7px 14px;border-radius:2px;white-space:nowrap}
+.rs.now{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
+.rs.mid{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
+.rs.far{background:transparent;color:var(--ink-3);border:1px solid var(--line)}
+.rs-sep{color:var(--line-2);padding:0 8px;font-size:18px}
 
-footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--font-mono);font-size:var(--fs-label);color:var(--ink-3)}
+footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-3)}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 
-@media(max-width:700px){
+@media(max-width:720px){
   .hero{grid-template-columns:1fr}.hero-aside{display:none}
-  .pillars{grid-template-columns:1fr 1fr}.notes-grid{grid-template-columns:1fr}
-  .roadmap-track{flex-direction:column;align-items:flex-start;gap:8px}
+  .pillars{grid-template-columns:1fr 1fr}
+  .notes-grid{grid-template-columns:1fr}
+  .activities-grid{grid-template-columns:1fr}
 }
 @media(max-width:480px){.pillars{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
@@ -202,16 +237,26 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
 <body>
 <div class="page">
 
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a class="back-btn" href="index.html">← Voltar ao início</a>
+  <div class="topnav-right">
+    <span class="page-label">PDI QA-focused</span>
+    <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
+  </div>
+</nav>
+
+<!-- HERO -->
 <header class="hero">
   <div class="hero-left">
     <div class="hero-eyebrow">PDI — Plano de Desenvolvimento Individual</div>
     <div class="hero-plan-badge">Plano 1 de 3 · 12 meses · Out/2025 → Out/2026</div>
     <h1>QA com<br>visão de<br><em>segurança</em></h1>
-    <p class="hero-desc">Evolução técnica no contexto real da FC — Playwright, k6, skills/agentes, regras de negócio, SellerCenter e Anymarket — com segurança como diferencial. Plano 1 de uma jornada de 3 anos.</p>
+    <p class="hero-desc">Evolução técnica no contexto real da FC — Playwright, k6, skills/agentes, regras de negócio, SellerCenter e Anymarket — com segurança como diferencial.</p>
     <div class="hero-chips">
       <span class="chip hi">Versão QA-focused</span>
       <span class="chip">Denizard · FC</span>
-      <span class="chip">Elton · Eric</span>
+      <span class="chip">Larissa · Elton · Eric</span>
       <span class="chip">Playwright + k6 + Skills</span>
     </div>
   </div>
@@ -219,34 +264,88 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
     <div class="hero-big">12</div>
     <div class="hero-big-sub">meses · plano 1</div>
     <div class="hero-plan-track">
-      <div class="plan-dot active"></div>
-      <div class="plan-dot"></div>
-      <div class="plan-dot"></div>
+      <div class="plan-dot active"></div><div class="plan-dot"></div><div class="plan-dot"></div>
     </div>
   </div>
 </header>
 
 <div class="version-bar"><span class="pulse"></span>v3.0 · qa-focused · 5 pilares · plano 1/3</div>
 
+<!-- ACTIVITIES -->
+<div class="activities-section">
+  <div class="sec-label">Atividades em andamento & concluídas</div>
+  <div class="activities-grid" id="activities-grid">
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">OverTheWire Bandit</div>
+        <div class="activity-meta">Nível 10–15 · Em progresso</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">Fortinet NSE 1 / 2</div>
+        <div class="activity-meta">Certificação gratuita · Em progresso</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">HTB Starting Point</div>
+        <div class="activity-meta">Introdução em progresso</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">Pós-graduação CEIC/UFPE</div>
+        <div class="activity-meta">Red Team + Blue Team · Primeiros módulos</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-done"></div>
+      <div class="activity-content">
+        <div class="activity-title">Automações com MCP Playwright</div>
+        <div class="activity-meta">Fluxos FC automatizados</div>
+        <span class="activity-tag tag-done">Em uso</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-done"></div>
+      <div class="activity-content">
+        <div class="activity-title">Análise de malware (aspectos gerais)</div>
+        <div class="activity-meta">CEIC · Módulo inicial concluído</div>
+        <span class="activity-tag tag-done">Concluído</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LEGEND -->
 <div class="sec-label">Pilares</div>
 <div class="legend-row">
   <div class="leg"><div class="leg-mark" style="background:var(--wine-bright)"></div>Planos de teste & skills</div>
-  <div class="leg"><div class="leg-mark" style="background:#7B6DD8"></div>Playwright — do MCP ao código real</div>
-  <div class="leg"><div class="leg-mark" style="background:var(--amber)"></div>k6 — performance testing</div>
-  <div class="leg"><div class="leg-mark" style="background:#3A9D85"></div>Regras de negócio & impacto</div>
-  <div class="leg"><div class="leg-mark" style="background:#C4623A"></div>Segurança no QA</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--purple)"></div>Playwright</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--amber)"></div>k6 performance</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--teal)"></div>Regras de negócio & impacto</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--orange)"></div>Segurança no QA</div>
 </div>
 
+<!-- QUARTERS -->
 <div class="sec-label">Trimestres</div>
 <div class="quarters" id="quarters">
 
-<!-- T1 -->
 <details class="quarter" data-q="q1" open>
   <summary class="q-summary">
     <span class="q-tag t-q1">T1 · Out/2025 – Jan/2026</span>
     <div class="q-info">
-      <div class="q-name">Base real — uso crítico de skills, k6 do zero, negócio aplicado</div>
-      <div class="q-sub">Você já gera planos com agentes e escreve testes simples — meta: criticidade e entendimento de impacto</div>
+      <div class="q-name">Base real — skills críticas, k6 do zero, negócio aplicado</div>
+      <div class="q-sub">Você já gera planos com agentes — meta: criticidade e entendimento de impacto</div>
     </div>
     <div class="q-progress-wrap">
       <div class="q-progress-bar"><div class="q-progress-fill" id="prog-q1"></div></div>
@@ -260,10 +359,10 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
         <div class="p-title">Planos de Teste & Skills</div>
         <div class="status-row"><span class="status-badge s-current">Em andamento</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q1-sk1"><div class="task-check"></div><span class="task-text">Para cada plano gerado pela skill: identificar ativamente cenários faltando — edge cases de negócio que o agente ignorou</span></li>
+          <li class="task-item" data-id="q1-sk1"><div class="task-check"></div><span class="task-text">Para cada plano gerado pela skill: identificar cenários faltando — edge cases que o agente ignorou</span></li>
           <li class="task-item" data-id="q1-sk2"><div class="task-check"></div><span class="task-text">Documentar no Loop 1 padrão de falha que o agente não cobriu neste trimestre</span></li>
-          <li class="task-item" data-id="q1-sk3"><div class="task-check"></div><span class="task-text">Melhorar o prompt da skill passando contexto de SellerCenter/Anymarket — comparar qualidade antes/depois</span></li>
-          <li class="task-item" data-id="q1-sk4"><div class="task-check"></div><span class="task-text">Criar template de "contexto de negócio" para enriquecer links de Jira antes de enviar para as skills</span></li>
+          <li class="task-item" data-id="q1-sk3"><div class="task-check"></div><span class="task-text">Melhorar prompt da skill com contexto de SellerCenter/Anymarket — comparar antes/depois</span></li>
+          <li class="task-item" data-id="q1-sk4"><div class="task-check"></div><span class="task-text">Criar template de "contexto de negócio" para enriquecer links de Jira antes de enviar para skills</span></li>
         </ul>
       </div>
       <div class="pillar p-pw">
@@ -280,8 +379,8 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
         <div class="p-title">k6 — primeiros passos</div>
         <div class="status-row"><span class="status-badge s-pending">Não iniciado</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q1-k1"><div class="task-check"></div><span class="task-text">Instalar k6 + rodar <a href="https://k6.io/docs/get-started/running-k6/" target="_blank">Hello World oficial ↗</a> — entender VUs, iterations, duração</span></li>
-          <li class="task-item" data-id="q1-k2"><div class="task-check"></div><span class="task-text">Criar 1 smoke test para um endpoint da API FC no ambiente QAS</span></li>
+          <li class="task-item" data-id="q1-k1"><div class="task-check"></div><span class="task-text">Instalar k6 + rodar <a href="https://k6.io/docs/get-started/running-k6/" target="_blank">Hello World oficial ↗</a></span></li>
+          <li class="task-item" data-id="q1-k2"><div class="task-check"></div><span class="task-text">Criar 1 smoke test para um endpoint da API FC no QAS</span></li>
           <li class="task-item" data-id="q1-k3"><div class="task-check"></div><span class="task-text">Entender métricas: http_req_duration, http_req_failed, vus_max</span></li>
           <li class="task-item" data-id="q1-k4"><div class="task-check"></div><span class="task-text">Documentar no Loop: "como rodar smoke tests de performance no projeto FC"</span></li>
         </ul>
@@ -290,8 +389,8 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
         <div class="p-title">Regras de Negócio & Impacto</div>
         <div class="status-row"><span class="status-badge s-new">Novo pilar</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q1-bz1"><div class="task-check"></div><span class="task-text">Para cada feature nova: antes de testar, mapear quais fluxos do SellerCenter/Anymarket ela pode impactar</span></li>
-          <li class="task-item" data-id="q1-bz2"><div class="task-check"></div><span class="task-text">Criar um "mapa de dependências" simples dos módulos da FC — qual quebra quando X muda?</span></li>
+          <li class="task-item" data-id="q1-bz1"><div class="task-check"></div><span class="task-text">Para cada feature: mapear quais fluxos do SellerCenter/Anymarket ela pode impactar antes de testar</span></li>
+          <li class="task-item" data-id="q1-bz2"><div class="task-check"></div><span class="task-text">Criar "mapa de dependências" dos módulos da FC — qual quebra quando X muda?</span></li>
           <li class="task-item" data-id="q1-bz3"><div class="task-check"></div><span class="task-text">Documentar no Loop as regras de negócio críticas do marketplace que todo QA deveria saber</span></li>
           <li class="task-item" data-id="q1-bz4"><div class="task-check"></div><span class="task-text">Antes de qualquer teste em prod: perguntar ao Eric "qual é o risco arquitetural desta mudança?"</span></li>
         </ul>
@@ -301,29 +400,28 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
         <div class="status-row"><span class="status-badge s-current">Aplica ao trabalho atual</span></div>
         <ul class="task-list">
           <li class="task-item" data-id="q1-sc1"><div class="task-check"></div><span class="task-text">Nas queries de banco: identificar campos vulneráveis a SQL injection nos fluxos de pedido</span></li>
-          <li class="task-item" data-id="q1-sc2"><div class="task-check"></div><span class="task-text">Testar autenticação do app mobile FC: sessão expira corretamente? Tokens são válidos?</span></li>
+          <li class="task-item" data-id="q1-sc2"><div class="task-check"></div><span class="task-text">Testar autenticação do app mobile FC: sessão expira? Tokens válidos?</span></li>
           <li class="task-item" data-id="q1-sc3"><div class="task-check"></div><span class="task-text">Criar checklist de segurança para revisão de PRs no fluxo Jira atual</span></li>
-          <li class="task-item" data-id="q1-sc4"><div class="task-check"></div><span class="task-text">Continuar <a href="https://overthewire.org/wargames/bandit/" target="_blank">Bandit ↗</a> nível 15→25 (2h/dia — prática separada do trabalho)</span></li>
+          <li class="task-item" data-id="q1-sc4"><div class="task-check"></div><span class="task-text">Continuar <a href="https://overthewire.org/wargames/bandit/" target="_blank">Bandit ↗</a> nível 15→25 (2h/dia)</span></li>
         </ul>
       </div>
     </div>
     <div class="kpis">
-      <span class="kpi kpi-skill">1 padrão de falha documentado no Loop</span>
-      <span class="kpi kpi-pw">1 script Playwright sem MCP entregue</span>
+      <span class="kpi kpi-skill">1 padrão de falha documentado</span>
+      <span class="kpi kpi-pw">1 script Playwright sem MCP</span>
       <span class="kpi kpi-k6">1 smoke test k6 documentado</span>
-      <span class="kpi kpi-biz">Mapa de dependências de módulos criado</span>
-      <span class="kpi kpi-sec">Checklist de segurança em PRs ativo</span>
+      <span class="kpi kpi-biz">Mapa de dependências criado</span>
+      <span class="kpi kpi-sec">Checklist de segurança em PRs</span>
     </div>
   </div>
 </details>
 
-<!-- T2 -->
 <details class="quarter" data-q="q2">
   <summary class="q-summary">
     <span class="q-tag t-q2">T2 · Jan/2026 – Abr/2026</span>
     <div class="q-info">
       <div class="q-name">Visibilidade no time + k6 load test + impacto de novos frameworks</div>
-      <div class="q-sub">Começar a aparecer como referência — entender quando uma mudança técnica muda o que precisa ser testado</div>
+      <div class="q-sub">Referência técnica emergindo — entender quando uma mudança muda o que precisa ser testado</div>
     </div>
     <div class="q-progress-wrap">
       <div class="q-progress-bar"><div class="q-progress-fill" id="prog-q2"></div></div>
@@ -337,10 +435,10 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
         <div class="p-title">Planos de Teste & Skills</div>
         <div class="status-row"><span class="status-badge s-locked">Bloqueado até T1</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q2-sk1"><div class="task-check"></div><span class="task-text">Propor ao Elton: revisão quinzenal dos planos gerados pelos agentes — o que o time aceita sem ler?</span></li>
-          <li class="task-item" data-id="q2-sk2"><div class="task-check"></div><span class="task-text">Construir biblioteca de contextos de negócio reutilizáveis para skills (SellerCenter, Anymarket, fluxos de pedido)</span></li>
-          <li class="task-item" data-id="q2-sk3"><div class="task-check"></div><span class="task-text">Propor DoD: plano gerado por agente precisa de revisão crítica com checklist antes de entrar no Jira</span></li>
-          <li class="task-item" data-id="q2-sk4"><div class="task-check"></div><span class="task-text">Mapear boundary values que agentes tipicamente ignoram (limites de preço, estoque, caracteres especiais)</span></li>
+          <li class="task-item" data-id="q2-sk1"><div class="task-check"></div><span class="task-text">Propor ao Elton: revisão quinzenal dos planos gerados — o que o time aceita sem ler?</span></li>
+          <li class="task-item" data-id="q2-sk2"><div class="task-check"></div><span class="task-text">Construir biblioteca de contextos de negócio reutilizáveis para skills</span></li>
+          <li class="task-item" data-id="q2-sk3"><div class="task-check"></div><span class="task-text">Propor DoD: plano gerado por agente precisa de revisão crítica antes de entrar no Jira</span></li>
+          <li class="task-item" data-id="q2-sk4"><div class="task-check"></div><span class="task-text">Mapear boundary values que agentes tipicamente ignoram (limites de preço, estoque)</span></li>
         </ul>
       </div>
       <div class="pillar p-pw">
@@ -349,7 +447,7 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
         <ul class="task-list">
           <li class="task-item" data-id="q2-pw1"><div class="task-check"></div><span class="task-text">Implementar <a href="https://playwright.dev/docs/pom" target="_blank">Page Object Model ↗</a> nos scripts do projeto FC</span></li>
           <li class="task-item" data-id="q2-pw2"><div class="task-check"></div><span class="task-text">Criar suite de testes para fluxo completo de pedido no SellerCenter</span></li>
-          <li class="task-item" data-id="q2-pw3"><div class="task-check"></div><span class="task-text">Usar <a href="https://playwright.dev/docs/api/class-apirequestcontext" target="_blank">Playwright APIRequestContext ↗</a> para testes de API sem depender só do front</span></li>
+          <li class="task-item" data-id="q2-pw3"><div class="task-check"></div><span class="task-text">Usar <a href="https://playwright.dev/docs/api/class-apirequestcontext" target="_blank">Playwright APIRequestContext ↗</a> para testes de API</span></li>
           <li class="task-item" data-id="q2-pw4"><div class="task-check"></div><span class="task-text">Debugging sem MCP primeiro — só recorrer se travado 30 min+</span></li>
         </ul>
       </div>
@@ -357,42 +455,41 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
         <div class="p-title">k6 — load test real</div>
         <div class="status-row"><span class="status-badge s-locked">Bloqueado até T1</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q2-k1"><div class="task-check"></div><span class="task-text">Criar load test com stages (ramp up / sustain / ramp down) para API do FC</span></li>
+          <li class="task-item" data-id="q2-k1"><div class="task-check"></div><span class="task-text">Criar load test com stages (ramp up / sustain / ramp down)</span></li>
           <li class="task-item" data-id="q2-k2"><div class="task-check"></div><span class="task-text">Identificar 1 endpoint com latência alta e reportar ao Eric com contexto arquitetural</span></li>
           <li class="task-item" data-id="q2-k3"><div class="task-check"></div><span class="task-text">Comparar performance entre deploys: baseline vs. após mudança</span></li>
-          <li class="task-item" data-id="q2-k4"><div class="task-check"></div><span class="task-text">Explorar <a href="https://k6.io/docs/using-k6/thresholds/" target="_blank">k6 Thresholds ↗</a> — critério automático de falha por SLA</span></li>
+          <li class="task-item" data-id="q2-k4"><div class="task-check"></div><span class="task-text">Explorar <a href="https://k6.io/docs/using-k6/thresholds/" target="_blank">k6 Thresholds ↗</a> para critério automático de falha</span></li>
         </ul>
       </div>
       <div class="pillar p-biz">
         <div class="p-title">Regras de Negócio & Impacto</div>
         <div class="status-row"><span class="status-badge s-locked">Bloqueado até T1</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q2-bz1"><div class="task-check"></div><span class="task-text">Quando um novo framework chegar: perguntar ao Eric qual o impacto esperado em integrações existentes — mapear antes de testar</span></li>
-          <li class="task-item" data-id="q2-bz2"><div class="task-check"></div><span class="task-text">Para cada implementação nova: criar checklist de regressão baseado no mapa de dependências do T1</span></li>
-          <li class="task-item" data-id="q2-bz3"><div class="task-check"></div><span class="task-text">Estudar o fluxo completo de um pedido no marketplace da FC — do front ao banco — e documentar os pontos de falha conhecidos</span></li>
-          <li class="task-item" data-id="q2-bz4"><div class="task-check"></div><span class="task-text">Propor ao Elton: "análise de impacto" como etapa formal antes do início dos testes de cada story</span></li>
+          <li class="task-item" data-id="q2-bz1"><div class="task-check"></div><span class="task-text">Quando framework novo chegar: perguntar ao Eric o impacto arquitetural antes de testar</span></li>
+          <li class="task-item" data-id="q2-bz2"><div class="task-check"></div><span class="task-text">Para cada implementação nova: checklist de regressão baseado no mapa de dependências do T1</span></li>
+          <li class="task-item" data-id="q2-bz3"><div class="task-check"></div><span class="task-text">Estudar o fluxo completo de pedido da FC — do front ao banco — e documentar pontos de falha</span></li>
+          <li class="task-item" data-id="q2-bz4"><div class="task-check"></div><span class="task-text">Propor ao Elton: "análise de impacto" como etapa formal antes dos testes de cada story</span></li>
         </ul>
       </div>
       <div class="pillar p-sec">
         <div class="p-title">Segurança — ISO 27001</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q2-sc1"><div class="task-check"></div><span class="task-text">Estudar controles do Anexo A da ISO 27001 relevantes ao QA (A.14 — desenvolvimento seguro)</span></li>
-          <li class="task-item" data-id="q2-sc2"><div class="task-check"></div><span class="task-text">Propor 1 melhoria de processo na FC baseada num controle ISO (ex: gestão de acessos ao QAS)</span></li>
-          <li class="task-item" data-id="q2-sc3"><div class="task-check"></div><span class="task-text">Em reuniões com Eric: usar linguagem de risco (probabilidade × impacto) ao reportar bugs críticos</span></li>
+          <li class="task-item" data-id="q2-sc1"><div class="task-check"></div><span class="task-text">Estudar controles ISO 27001 relevantes ao QA (A.14 — desenvolvimento seguro)</span></li>
+          <li class="task-item" data-id="q2-sc2"><div class="task-check"></div><span class="task-text">Propor 1 melhoria de processo na FC baseada num controle ISO</span></li>
+          <li class="task-item" data-id="q2-sc3"><div class="task-check"></div><span class="task-text">Em reuniões com Eric: usar linguagem de risco (probabilidade × impacto)</span></li>
         </ul>
       </div>
     </div>
     <div class="kpis">
-      <span class="kpi kpi-skill">Biblioteca de contextos de negócio criada</span>
-      <span class="kpi kpi-pw">Suite Playwright com Page Objects entregue</span>
-      <span class="kpi kpi-k6">1 gargalo de performance reportado ao Eric</span>
-      <span class="kpi kpi-biz">Análise de impacto como etapa formal proposta</span>
-      <span class="kpi kpi-sec">Proposta ISO 27001 documentada no Loop</span>
+      <span class="kpi kpi-skill">Biblioteca de contextos criada</span>
+      <span class="kpi kpi-pw">Suite Playwright com Page Objects</span>
+      <span class="kpi kpi-k6">1 gargalo de performance reportado</span>
+      <span class="kpi kpi-biz">Análise de impacto como etapa formal</span>
+      <span class="kpi kpi-sec">Proposta ISO 27001 no Loop</span>
     </div>
   </div>
 </details>
 
-<!-- T3 -->
 <details class="quarter" data-q="q3">
   <summary class="q-summary">
     <span class="q-tag t-q3">T3 · Abr/2026 – Jul/2026</span>
@@ -411,15 +508,15 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
       <div class="pillar p-skill">
         <div class="p-title">Planos de Teste & Skills</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q3-sk1"><div class="task-check"></div><span class="task-text">Criar template oficial do time para enriquecer links Jira antes de enviar para a skill — virar referência interna</span></li>
-          <li class="task-item" data-id="q3-sk2"><div class="task-check"></div><span class="task-text">Revisar PRs de colegas: o plano gerado cobre os casos de falha de banco de dados e integrações?</span></li>
-          <li class="task-item" data-id="q3-sk3"><div class="task-check"></div><span class="task-text">Documentar checklist de revisão pós-geração: o que o agente não sabe que você sabe sobre o negócio</span></li>
+          <li class="task-item" data-id="q3-sk1"><div class="task-check"></div><span class="task-text">Criar template oficial do time para enriquecer links Jira antes de enviar para a skill</span></li>
+          <li class="task-item" data-id="q3-sk2"><div class="task-check"></div><span class="task-text">Revisar PRs de colegas: o plano cobre casos de falha de banco e integrações?</span></li>
+          <li class="task-item" data-id="q3-sk3"><div class="task-check"></div><span class="task-text">Documentar checklist de revisão pós-geração: o que o agente não sabe sobre o negócio</span></li>
         </ul>
       </div>
       <div class="pillar p-pw">
         <div class="p-title">Playwright — CI/CD</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q3-pw1"><div class="task-check"></div><span class="task-text">Integrar suite Playwright no pipeline de CI (GitHub Actions ou equivalente da FC)</span></li>
+          <li class="task-item" data-id="q3-pw1"><div class="task-check"></div><span class="task-text">Integrar suite Playwright no pipeline de CI</span></li>
           <li class="task-item" data-id="q3-pw2"><div class="task-check"></div><span class="task-text">Criar testes de regressão automáticos para fluxos críticos de marketplace</span></li>
           <li class="task-item" data-id="q3-pw3"><div class="task-check"></div><span class="task-text">Usar <a href="https://playwright.dev/docs/trace-viewer" target="_blank">Playwright Trace Viewer ↗</a> para debugging de falhas em CI</span></li>
         </ul>
@@ -428,45 +525,44 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
         <div class="p-title">k6 — CI/CD + stress</div>
         <ul class="task-list">
           <li class="task-item" data-id="q3-k1"><div class="task-check"></div><span class="task-text">Integrar k6 no pipeline de CI — smoke test automático em cada deploy no QAS</span></li>
-          <li class="task-item" data-id="q3-k2"><div class="task-check"></div><span class="task-text">Criar stress test e spike test para APIs de pedido/pagamento do marketplace</span></li>
-          <li class="task-item" data-id="q3-k3"><div class="task-check"></div><span class="task-text">Explorar <a href="https://k6.io/docs/results-output/real-time/grafana-cloud/" target="_blank">k6 + Grafana Cloud ↗</a> para dashboard de performance</span></li>
+          <li class="task-item" data-id="q3-k2"><div class="task-check"></div><span class="task-text">Criar stress test e spike test para APIs de pedido/pagamento</span></li>
+          <li class="task-item" data-id="q3-k3"><div class="task-check"></div><span class="task-text">Explorar <a href="https://k6.io/docs/results-output/real-time/grafana-cloud/" target="_blank">k6 + Grafana Cloud ↗</a></span></li>
         </ul>
       </div>
       <div class="pillar p-biz">
         <div class="p-title">Regras de Negócio & Impacto</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q3-bz1"><div class="task-check"></div><span class="task-text">Toda feature que envolve banco: antes de testar, revisar a query com Eric — entender o impacto arquitetural</span></li>
-          <li class="task-item" data-id="q3-bz2"><div class="task-check"></div><span class="task-text">Criar framework pessoal de análise de impacto: "quem usa isso? o que quebra se mudar? o que não pode regredir?"</span></li>
-          <li class="task-item" data-id="q3-bz3"><div class="task-check"></div><span class="task-text">Apresentar ao Elton: relatório de 1 feature onde a análise de impacto antecipou um bug que teria ido a prod</span></li>
-          <li class="task-item" data-id="q3-bz4"><div class="task-check"></div><span class="task-text">Propor "Security Test Cases" no plano de testes do Jira — conectar impacto de negócio com riscos de segurança</span></li>
+          <li class="task-item" data-id="q3-bz1"><div class="task-check"></div><span class="task-text">Toda feature com banco: revisar a query com Eric antes de testar — entender impacto arquitetural</span></li>
+          <li class="task-item" data-id="q3-bz2"><div class="task-check"></div><span class="task-text">Criar framework pessoal: "quem usa isso? o que quebra? o que não pode regredir?"</span></li>
+          <li class="task-item" data-id="q3-bz3"><div class="task-check"></div><span class="task-text">Apresentar ao Elton: 1 feature onde análise de impacto antecipou bug que teria ido a prod</span></li>
+          <li class="task-item" data-id="q3-bz4"><div class="task-check"></div><span class="task-text">Propor "Security Test Cases" no Jira — conectar impacto de negócio com riscos de segurança</span></li>
         </ul>
       </div>
       <div class="pillar p-sec">
         <div class="p-title">Segurança — testes ativos</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q3-sc1"><div class="task-check"></div><span class="task-text">Testar headers de segurança (CSP, CORS, X-Frame-Options) automaticamente com Playwright</span></li>
-          <li class="task-item" data-id="q3-sc2"><div class="task-check"></div><span class="task-text">Praticar SQL injection e XSS em <a href="https://owasp.org/www-project-webgoat/" target="_blank">WebGoat ↗</a> — trazer conhecimento para testes do FC em homolog</span></li>
-          <li class="task-item" data-id="q3-sc3"><div class="task-check"></div><span class="task-text">Análise de logs de servidor com Linux em incidentes — usar conhecimento do Bandit na prática</span></li>
+          <li class="task-item" data-id="q3-sc1"><div class="task-check"></div><span class="task-text">Testar headers de segurança (CSP, CORS, X-Frame-Options) com Playwright</span></li>
+          <li class="task-item" data-id="q3-sc2"><div class="task-check"></div><span class="task-text">Praticar SQL injection e XSS em <a href="https://owasp.org/www-project-webgoat/" target="_blank">WebGoat ↗</a></span></li>
+          <li class="task-item" data-id="q3-sc3"><div class="task-check"></div><span class="task-text">Análise de logs de servidor com Linux em incidentes</span></li>
         </ul>
       </div>
     </div>
     <div class="kpis">
-      <span class="kpi kpi-skill">Template de enriquecimento de Jira adotado pelo time</span>
+      <span class="kpi kpi-skill">Template de enriquecimento Jira adotado</span>
       <span class="kpi kpi-pw">Playwright integrado ao CI/CD</span>
-      <span class="kpi kpi-k6">k6 automático em todo deploy do QAS</span>
-      <span class="kpi kpi-biz">1 bug antecipado por análise de impacto — documentado</span>
+      <span class="kpi kpi-k6">k6 automático em todo deploy QAS</span>
+      <span class="kpi kpi-biz">1 bug antecipado por análise de impacto</span>
       <span class="kpi kpi-sec">Security Test Cases no Jira</span>
     </div>
   </div>
 </details>
 
-<!-- T4 -->
 <details class="quarter" data-q="q4">
   <summary class="q-summary">
     <span class="q-tag t-q4">T4 · Jul/2026 – Out/2026</span>
     <div class="q-info">
       <div class="q-name">Ownership + playbook + posicionamento para Plano 2</div>
-      <div class="q-sub">Consolidar referência técnica no time — apresentação formal ao Elton e Eric</div>
+      <div class="q-sub">Referência técnica consolidada — apresentação formal ao Larissa, Elton e Eric</div>
     </div>
     <div class="q-progress-wrap">
       <div class="q-progress-bar"><div class="q-progress-fill" id="prog-q4"></div></div>
@@ -479,41 +575,41 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
       <div class="pillar p-skill">
         <div class="p-title">Planos de Teste & Skills</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q4-sk1"><div class="task-check"></div><span class="task-text">Ser responsável por definir quando usar skill/agente vs. abordagem diferente para cada tipo de feature</span></li>
-          <li class="task-item" data-id="q4-sk2"><div class="task-check"></div><span class="task-text">Publicar playbook de QA no Loop: uso crítico de skills, padrões Playwright, k6, análise de impacto, segurança</span></li>
-          <li class="task-item" data-id="q4-sk3"><div class="task-check"></div><span class="task-text">Apresentar métricas de qualidade ao Elton (craft) e ao Eric (impacto arquitetural e performance)</span></li>
+          <li class="task-item" data-id="q4-sk1"><div class="task-check"></div><span class="task-text">Ser responsável por definir quando usar skill/agente vs. abordagem diferente</span></li>
+          <li class="task-item" data-id="q4-sk2"><div class="task-check"></div><span class="task-text">Publicar playbook de QA no Loop: skills, Playwright, k6, análise de impacto, segurança</span></li>
+          <li class="task-item" data-id="q4-sk3"><div class="task-check"></div><span class="task-text">Apresentar métricas de qualidade ao Elton (craft) e ao Eric (impacto arquitetural)</span></li>
         </ul>
       </div>
       <div class="pillar p-pw">
         <div class="p-title">Playwright — mentoria</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q4-pw1"><div class="task-check"></div><span class="task-text">Mentorar 1 colega do time em Playwright — ensinar a lógica por trás da automação, não só o código</span></li>
-          <li class="task-item" data-id="q4-pw2"><div class="task-check"></div><span class="task-text">Criar guia interno: "quando usar MCP vs. código manual vs. Claude" para o time</span></li>
-          <li class="task-item" data-id="q4-pw3"><div class="task-check"></div><span class="task-text">Explorar <a href="https://playwright.dev/docs/api-testing" target="_blank">Playwright API Testing ↗</a> para substituir testes manuais de API</span></li>
+          <li class="task-item" data-id="q4-pw1"><div class="task-check"></div><span class="task-text">Mentorar 1 colega em Playwright — ensinar a lógica, não só o código</span></li>
+          <li class="task-item" data-id="q4-pw2"><div class="task-check"></div><span class="task-text">Criar guia: "quando usar MCP vs. código manual vs. Claude" para o time</span></li>
+          <li class="task-item" data-id="q4-pw3"><div class="task-check"></div><span class="task-text">Explorar <a href="https://playwright.dev/docs/api-testing" target="_blank">Playwright API Testing ↗</a></span></li>
         </ul>
       </div>
       <div class="pillar p-k6">
         <div class="p-title">k6 — ownership</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q4-k1"><div class="task-check"></div><span class="task-text">Ser responsável pela estratégia de performance testing do time na FC</span></li>
-          <li class="task-item" data-id="q4-k2"><div class="task-check"></div><span class="task-text">Criar relatório mensal de tendências de performance para o Eric (visão arquitetural)</span></li>
-          <li class="task-item" data-id="q4-k3"><div class="task-check"></div><span class="task-text">Avaliar <a href="https://grafana.com/" target="_blank">Grafana ↗</a> + <a href="https://www.influxdata.com/" target="_blank">InfluxDB ↗</a> como dashboards permanentes de k6</span></li>
+          <li class="task-item" data-id="q4-k1"><div class="task-check"></div><span class="task-text">Ser responsável pela estratégia de performance testing do time</span></li>
+          <li class="task-item" data-id="q4-k2"><div class="task-check"></div><span class="task-text">Criar relatório mensal de tendências de performance para o Eric</span></li>
+          <li class="task-item" data-id="q4-k3"><div class="task-check"></div><span class="task-text">Avaliar <a href="https://grafana.com/" target="_blank">Grafana ↗</a> + <a href="https://www.influxdata.com/" target="_blank">InfluxDB ↗</a> como dashboards permanentes</span></li>
         </ul>
       </div>
       <div class="pillar p-biz">
         <div class="p-title">Regras de Negócio & Impacto</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q4-bz1"><div class="task-check"></div><span class="task-text">Elaborar threat model básico da aplicação FC (<a href="https://owasp.org/www-community/Threat_Modeling_Process" target="_blank">STRIDE/OWASP ↗</a>) — conectar regras de negócio com superfície de ataque</span></li>
-          <li class="task-item" data-id="q4-bz2"><div class="task-check"></div><span class="task-text">Apresentar ao Eric: mapa de impacto arquitetural dos testes — o que o QA cobre vs. o que fica descoberto</span></li>
-          <li class="task-item" data-id="q4-bz3"><div class="task-check"></div><span class="task-text">Propor Bug Bounty interno ou pentest anual para a FC com base no conhecimento acumulado</span></li>
+          <li class="task-item" data-id="q4-bz1"><div class="task-check"></div><span class="task-text">Elaborar threat model básico da FC (<a href="https://owasp.org/www-community/Threat_Modeling_Process" target="_blank">STRIDE/OWASP ↗</a>)</span></li>
+          <li class="task-item" data-id="q4-bz2"><div class="task-check"></div><span class="task-text">Apresentar ao Eric: mapa de impacto arquitetural — o que o QA cobre vs. o que fica descoberto</span></li>
+          <li class="task-item" data-id="q4-bz3"><div class="task-check"></div><span class="task-text">Propor Bug Bounty interno ou pentest anual para a FC</span></li>
         </ul>
       </div>
       <div class="pillar p-sec">
         <div class="p-title">Posicionamento segurança</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q4-sc1"><div class="task-check"></div><span class="task-text">Alinhar com Elton e Eric sobre papel "QA Security" e escopo do Plano 2</span></li>
-          <li class="task-item" data-id="q4-sc2"><div class="task-check"></div><span class="task-text">1 lab <a href="https://www.hackthebox.com/" target="_blank">HackTheBox ↗</a> por mês neste trimestre — write-ups publicados</span></li>
-          <li class="task-item" data-id="q4-sc3"><div class="task-check"></div><span class="task-text">Definir metas e escopo do Plano 2 em conjunto com Elton e Eric</span></li>
+          <li class="task-item" data-id="q4-sc1"><div class="task-check"></div><span class="task-text">Alinhar com Larissa, Elton e Eric sobre papel "QA Security" e Plano 2</span></li>
+          <li class="task-item" data-id="q4-sc2"><div class="task-check"></div><span class="task-text">1 lab <a href="https://www.hackthebox.com/" target="_blank">HackTheBox ↗</a> por mês — write-ups publicados</span></li>
+          <li class="task-item" data-id="q4-sc3"><div class="task-check"></div><span class="task-text">Definir metas e escopo do Plano 2 em conjunto com a liderança</span></li>
         </ul>
       </div>
     </div>
@@ -527,38 +623,81 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
   </div>
 </details>
 
-</div>
+</div><!-- /quarters -->
 
 <!-- ROADMAP -->
 <div class="sec-label">Jornada — visão 3 anos</div>
 <div class="roadmap">
   <div class="roadmap-label">Trajetória de carreira</div>
-  <div class="roadmap-sub">Plano 1 consolida QA Pleno com perfil de segurança. Planos 2 e 3 continuam em direção ao Red Team.</div>
+  <div class="roadmap-sub">Plano 1 consolida QA Pleno com perfil de segurança.</div>
   <div class="roadmap-track">
-    <span class="rs now">QA Júnior · FC</span>
-    <span class="rs-sep">→</span>
-    <span class="rs now">QA com visão de segurança</span>
-    <span class="rs-sep">→</span>
-    <span class="rs mid">QA Security / SDET</span>
-    <span class="rs-sep">→</span>
+    <span class="rs now">QA Júnior · FC</span><span class="rs-sep">→</span>
+    <span class="rs now">QA com visão de segurança</span><span class="rs-sep">→</span>
+    <span class="rs mid">QA Security / SDET</span><span class="rs-sep">→</span>
     <span class="rs far">Pentester / Red Team · FC</span>
   </div>
 </div>
 
-<!-- NOTAS -->
+<!-- PROJECTS -->
+<div class="projects-section">
+  <div class="sec-label">Projetos — em andamento e publicados</div>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-type">Cybersecurity · Lab</div>
+      <div class="project-name">OverTheWire Bandit Write-ups</div>
+      <p class="project-desc">Anotações e soluções dos níveis do Bandit — foco em comandos Linux e lógica de segurança.</p>
+      <div class="project-stack"><span class="stack-tag">Linux</span><span class="stack-tag">Bash</span><span class="stack-tag">CTF</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-type">QA · Automação</div>
+      <div class="project-name">Automações Playwright FC</div>
+      <p class="project-desc">Scripts de automação para fluxos do SellerCenter e Anymarket usando Playwright JS.</p>
+      <div class="project-stack"><span class="stack-tag">Playwright</span><span class="stack-tag">JavaScript</span><span class="stack-tag">MCP</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Cybersecurity · Estudo</div>
+      <div class="project-name">HTB Starting Point</div>
+      <p class="project-desc">Primeiras máquinas do HackTheBox — introdução a reconhecimento e exploração básica.</p>
+      <div class="project-stack"><span class="stack-tag">HackTheBox</span><span class="stack-tag">Kali</span><span class="stack-tag">Nmap</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Pós-graduação · CEIC</div>
+      <div class="project-name">PDI Cybersecurity Pathway</div>
+      <p class="project-desc">Este próprio PDI — construído com HTML/CSS puro, hospedado no GitHub Pages.</p>
+      <div class="project-stack"><span class="stack-tag">HTML</span><span class="stack-tag">CSS</span><span class="stack-tag">Supabase</span><span class="stack-tag">GitHub Pages</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTES -->
 <div class="notes-section">
-  <div class="sec-label">Anotações dos líderes</div>
+  <div class="sec-label">Anotações da liderança</div>
   <div class="notes-grid">
     <div class="note-block">
       <div class="note-header">
-        <div class="note-avatar el">EL</div>
+        <div class="note-avatar av-larissa">LA</div>
+        <div class="note-info">
+          <div class="note-name">Larissa</div>
+          <div class="note-role">Gerente · FC</div>
+          <div class="note-focus nf-larissa">Foco: direcionamento estratégico, pontos de melhoria, alinhamento de carreira</div>
+        </div>
+      </div>
+      <textarea class="note-area" id="note-larissa" placeholder="Pontos de melhoria, direcionamento estratégico, feedback de carreira…"></textarea>
+      <div class="note-footer">
+        <button class="note-save-btn" onclick="saveNote('larissa')">Salvar nota</button>
+        <span class="note-saved-msg" id="saved-larissa">Salvo ✓</span>
+      </div>
+    </div>
+    <div class="note-block">
+      <div class="note-header">
+        <div class="note-avatar av-elton">EL</div>
         <div class="note-info">
           <div class="note-name">Elton</div>
           <div class="note-role">QA Sênior · FC</div>
-          <div class="note-focus el">Foco: craft de QA, qualidade de processo, evolução técnica de testes</div>
+          <div class="note-focus nf-elton">Foco: craft de QA, qualidade de processo, evolução técnica de testes</div>
         </div>
       </div>
-      <textarea class="note-area" id="note-elton" placeholder="Como está evoluindo o craft de QA? Qualidade dos casos de teste, uso crítico das skills, autonomia técnica no Playwright…"></textarea>
+      <textarea class="note-area" id="note-elton" placeholder="Como está evoluindo o craft de QA? Qualidade dos casos de teste, autonomia técnica…"></textarea>
       <div class="note-footer">
         <button class="note-save-btn" onclick="saveNote('elton')">Salvar nota</button>
         <span class="note-saved-msg" id="saved-elton">Salvo ✓</span>
@@ -566,14 +705,14 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
     </div>
     <div class="note-block">
       <div class="note-header">
-        <div class="note-avatar er">ER</div>
+        <div class="note-avatar av-eric">ER</div>
         <div class="note-info">
           <div class="note-name">Eric</div>
           <div class="note-role">Arquiteto · FC</div>
-          <div class="note-focus er">Foco: impacto arquitetural, performance, segurança sistêmica, integrações</div>
+          <div class="note-focus nf-eric">Foco: impacto arquitetural, performance, segurança sistêmica, threat modeling</div>
         </div>
       </div>
-      <textarea class="note-area" id="note-eric" placeholder="O QA está entendendo o impacto arquitetural das mudanças? Performance, segurança, integrações com SellerCenter/Anymarket…"></textarea>
+      <textarea class="note-area" id="note-eric" placeholder="O QA está entendendo o impacto arquitetural? Performance, segurança, integrações…"></textarea>
       <div class="note-footer">
         <button class="note-save-btn" onclick="saveNote('eric')">Salvar nota</button>
         <span class="note-saved-msg" id="saved-eric">Salvo ✓</span>
@@ -587,56 +726,122 @@ footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);display
   <span>pdi-qa.html · GitHub Pages</span>
 </footer>
 
-</div>
+</div><!-- /page -->
+
 <script>
-const STORE='pdi-qa-v3';
-function getState(){try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch{return{}}}
-function setState(s){localStorage.setItem(STORE,JSON.stringify(s))}
-function updateProgress(qId){
-  const items=document.querySelectorAll(`[data-id^="${qId}-"]`);
-  const done=[...items].filter(i=>i.classList.contains('done')).length;
-  const pct=items.length?Math.round(done/items.length*100):0;
-  const fill=document.getElementById('prog-'+qId);
-  const label=document.getElementById('pct-'+qId);
-  if(fill)fill.style.width=pct+'%';
-  if(label)label.textContent=pct+'%';
+// ── SUPABASE CONFIG ──────────────────────────────────────────────
+// 1. Acesse https://supabase.com e crie um projeto gratuito
+// 2. Vá em Settings > API e copie a URL e a anon key
+// 3. Substitua os valores abaixo
+// 4. No painel do Supabase, crie uma tabela chamada "pdi_notes" com colunas:
+//    - id (int8, primary key, auto)
+//    - page (text)   ex: "qa"
+//    - author (text) ex: "elton"
+//    - content (text)
+//    - updated_at (timestamptz, default now())
+const SUPABASE_URL = 'https://cusjxplmmscgtejyfrtz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1c2p4cGxtbXNjZ3RlanlmcnR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2Mjk1MjUsImV4cCI6MjA5NzIwNTUyNX0.vJs8xJ4a03n_9kH3LxuzbBxb8mXHNGl3Mid45ImvJBU';
+const PAGE_ID = 'qa';
+
+let sb = null;
+try {
+  if (SUPABASE_URL !== 'https://cusjxplmmscgtejyfrtz.supabase.co') {
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    loadNotes();
+  }
+} catch(e) { console.warn('Supabase não configurado — usando localStorage.'); }
+
+async function saveNote(author) {
+  const content = document.getElementById('note-' + author).value;
+  const msg = document.getElementById('saved-' + author);
+  if (sb) {
+    const { error } = await sb.from('pdi_notes').upsert(
+      { page: PAGE_ID, author, content, updated_at: new Date().toISOString() },
+      { onConflict: 'page,author' }
+    );
+    if (error) { console.error(error); }
+  } else {
+    const s = JSON.parse(localStorage.getItem('pdi-qa-v3') || '{}');
+    s['note-' + author] = content;
+    localStorage.setItem('pdi-qa-v3', JSON.stringify(s));
+  }
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2000);
 }
-function initTasks(){
-  const state=getState();
-  document.querySelectorAll('.task-item').forEach(item=>{
-    const id=item.dataset.id;
-    if(state[id]){item.classList.add('done');item.querySelector('.task-check').textContent='✓';}
-    item.addEventListener('click',()=>{
-      const isDone=item.classList.toggle('done');
-      item.querySelector('.task-check').textContent=isDone?'✓':'';
-      const s=getState();s[id]=isDone;setState(s);
+
+async function loadNotes() {
+  if (sb) {
+    const { data } = await sb.from('pdi_notes').select('author,content').eq('page', PAGE_ID);
+    if (data) data.forEach(row => {
+      const el = document.getElementById('note-' + row.author);
+      if (el) el.value = row.content || '';
+    });
+  } else {
+    const s = JSON.parse(localStorage.getItem('pdi-qa-v3') || '{}');
+    ['larissa','elton','eric'].forEach(a => {
+      const el = document.getElementById('note-' + a);
+      if (el && s['note-' + a]) el.value = s['note-' + a];
+    });
+  }
+}
+
+// ── THEME ────────────────────────────────────────────────────────
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('pdi-theme', isDark ? 'light' : 'dark');
+}
+const savedTheme = localStorage.getItem('pdi-theme');
+if (savedTheme) {
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
+}
+
+// ── TASKS ────────────────────────────────────────────────────────
+const TASK_STORE = 'pdi-qa-tasks-v3';
+function getTaskState() { try { return JSON.parse(localStorage.getItem(TASK_STORE) || '{}'); } catch { return {}; } }
+function setTaskState(s) { localStorage.setItem(TASK_STORE, JSON.stringify(s)); }
+function updateProgress(qId) {
+  const items = document.querySelectorAll(`[data-id^="${qId}-"]`);
+  const done = [...items].filter(i => i.classList.contains('done')).length;
+  const pct = items.length ? Math.round(done / items.length * 100) : 0;
+  const fill = document.getElementById('prog-' + qId);
+  const label = document.getElementById('pct-' + qId);
+  if (fill) fill.style.width = pct + '%';
+  if (label) label.textContent = pct + '%';
+}
+function initTasks() {
+  const state = getTaskState();
+  document.querySelectorAll('.task-item').forEach(item => {
+    const id = item.dataset.id;
+    if (state[id]) { item.classList.add('done'); item.querySelector('.task-check').textContent = '✓'; }
+    item.addEventListener('click', () => {
+      const isDone = item.classList.toggle('done');
+      item.querySelector('.task-check').textContent = isDone ? '✓' : '';
+      const s = getTaskState(); s[id] = isDone; setTaskState(s);
       updateProgress(id.split('-')[0]);
     });
   });
   ['q1','q2','q3','q4'].forEach(updateProgress);
 }
-function saveNote(who){
-  const val=document.getElementById('note-'+who).value;
-  const s=getState();s['note-'+who]=val;setState(s);
-  const msg=document.getElementById('saved-'+who);
-  msg.classList.add('show');setTimeout(()=>msg.classList.remove('show'),2000);
-}
-function loadNotes(){
-  const s=getState();
-  ['elton','eric'].forEach(who=>{
-    const el=document.getElementById('note-'+who);
-    if(el&&s['note-'+who])el.value=s['note-'+who];
+
+// ── ENTRANCE ANIMATION ───────────────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), i * 70); obs.unobserve(e.target); }
   });
+}, { threshold: 0.04 });
+document.querySelectorAll('.quarter').forEach(q => obs.observe(q));
+
+const big = document.querySelector('.hero-big');
+if (big) {
+  big.addEventListener('mouseenter', () => big.style.color = 'var(--wine-bright)');
+  big.addEventListener('mouseleave', () => big.style.color = 'var(--line-2)');
 }
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach((e,i)=>{
-    if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*70);obs.unobserve(e.target);}
-  });
-},{threshold:0.04});
-document.querySelectorAll('.quarter').forEach(q=>obs.observe(q));
-const big=document.querySelector('.hero-big');
-if(big){big.addEventListener('mouseenter',()=>big.style.color='var(--wine-bright)');big.addEventListener('mouseleave',()=>big.style.color='var(--line-2)');}
-initTasks();loadNotes();
+
+initTasks();
 </script>
 </body>
 </html>

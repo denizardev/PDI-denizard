@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,210 +7,230 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --base:#0D0A0B;
-  --surface:#141010;
-  --surface-2:#1C1618;
-  --surface-3:#231C1E;
-  --ink:#EDE8DF;
-  --ink-2:#B8B0A6;
-  --ink-3:#6E6660;
-  --line:#2A2022;
-  --line-2:#362830;
-  --wine:#8B1A3A;
-  --wine-dim:rgba(139,26,58,0.12);
-  --wine-mid:rgba(139,26,58,0.28);
-  --wine-bright:#A8224A;
-  --amber:#C4853A;
-  --amber-dim:rgba(196,133,58,0.10);
-  --amber-mid:rgba(196,133,58,0.22);
-  --teal:#2E7D6B;
-  --teal-dim:rgba(46,125,107,0.10);
-  --blue:#3A5A7A;
-  --blue-dim:rgba(58,90,122,0.10);
-  --ease:cubic-bezier(0.16,1,0.3,1);
-  --font-display:'Bebas Neue',Impact,sans-serif;
-  --font-body:'IBM Plex Sans',sans-serif;
-  --font-mono:'IBM Plex Mono',monospace;
-  --fs-base:16.5px;
-  --fs-sm:13.5px;
-  --fs-label:11px;
-  --fs-task:13.5px;
+:root[data-theme="dark"]{
+  --bg:#0D0A0B;--surface:#141010;--surface-2:#1C1618;--surface-3:#231C1E;
+  --ink:#EDE8DF;--ink-2:#B8B0A6;--ink-3:#6E6660;
+  --line:#2A2022;--line-2:#362830;
+  --wine:#8B1A3A;--wine-dim:rgba(139,26,58,0.12);--wine-mid:rgba(139,26,58,0.28);--wine-bright:#A8224A;
+  --amber:#C4853A;--amber-dim:rgba(196,133,58,0.10);--amber-mid:rgba(196,133,58,0.22);
+  --teal:#2E7D6B;--teal-dim:rgba(46,125,107,0.10);
+  --blue:#3A5A7A;--blue-dim:rgba(58,90,122,0.10);
+  --purple:#7B6DD8;--purple-dim:rgba(123,109,216,0.10);
+  --green:#3A9D85;--green-dim:rgba(58,157,133,0.10);
+  --lavender:#9B59B6;--lavender-dim:rgba(155,89,182,0.10);--lavender-mid:rgba(155,89,182,0.24);
+}
+:root[data-theme="light"]{
+  --bg:#F7F4EF;--surface:#EEEAE2;--surface-2:#E5E0D6;--surface-3:#DDD8CE;
+  --ink:#1A1614;--ink-2:#4A4440;--ink-3:#8A8480;
+  --line:#D8D2C8;--line-2:#C8C0B4;
+  --wine:#8B1A3A;--wine-dim:rgba(139,26,58,0.07);--wine-mid:rgba(139,26,58,0.2);--wine-bright:#7A1633;
+  --amber:#A06820;--amber-dim:rgba(160,104,32,0.08);--amber-mid:rgba(160,104,32,0.2);
+  --teal:#1E6A58;--teal-dim:rgba(30,106,88,0.08);
+  --blue:#2A4A6A;--blue-dim:rgba(42,74,106,0.08);
+  --purple:#5A4EC0;--purple-dim:rgba(90,78,192,0.08);
+  --green:#2E8A72;--green-dim:rgba(46,138,114,0.08);
+  --lavender:#7B3A9E;--lavender-dim:rgba(123,58,158,0.08);--lavender-mid:rgba(123,58,158,0.2);
 }
 html{scroll-behavior:smooth}
-body{background:var(--base);color:var(--ink);font-family:var(--font-body);font-size:var(--fs-base);line-height:1.6;font-weight:300;-webkit-font-smoothing:antialiased}
-body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(139,26,58,0.018) 2px,rgba(139,26,58,0.018) 4px);pointer-events:none;z-index:0}
-.page{position:relative;z-index:1;max-width:1020px;margin:0 auto;padding:0 32px 120px}
+body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:16.5px;line-height:1.6;font-weight:300;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(139,26,58,0.015) 2px,rgba(139,26,58,0.015) 4px);pointer-events:none;z-index:0}
+[data-theme="light"] body::before{opacity:0.4}
+.page{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:0 28px 100px}
 
-.hero{display:grid;grid-template-columns:1fr auto;gap:0 32px;align-items:end;padding:64px 0 52px;border-bottom:1px solid var(--line);margin-bottom:52px}
-.hero-eyebrow{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.18em;text-transform:uppercase;color:var(--wine-bright);margin-bottom:8px;display:flex;align-items:center;gap:10px;opacity:0;animation:fadeUp 0.5s var(--ease) 0.1s forwards}
+/* TOP NAV */
+.topnav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:14px 0;margin-bottom:8px;background:var(--bg);border-bottom:1px solid var(--line);transition:background 0.3s}
+.back-btn{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--ink-3);text-decoration:none;padding:6px 12px;border:1px solid var(--line-2);border-radius:2px;transition:all 0.2s}
+.back-btn:hover{border-color:var(--wine);color:var(--wine-bright);background:var(--wine-dim)}
+.topnav-right{display:flex;align-items:center;gap:8px}
+.theme-toggle{width:34px;height:34px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s}
+.theme-toggle:hover{border-color:var(--wine)}
+.page-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-3)}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:1fr auto;gap:0 32px;align-items:end;padding:56px 0 48px;border-bottom:1px solid var(--line);margin-bottom:52px}
+.hero-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--wine-bright);margin-bottom:8px;display:flex;align-items:center;gap:10px;opacity:0;animation:fadeUp 0.5s ease 0.1s forwards}
 .hero-eyebrow::before{content:'';width:18px;height:1px;background:var(--wine-bright)}
-.hero-plan-badge{font-family:var(--font-mono);font-size:var(--fs-label);color:var(--ink-3);background:var(--surface-2);border:1px solid var(--line-2);padding:4px 12px;border-radius:1px;margin-bottom:16px;display:inline-block;opacity:0;animation:fadeUp 0.5s var(--ease) 0.15s forwards}
-.hero h1{font-family:var(--font-display);font-size:clamp(72px,12vw,130px);line-height:0.92;letter-spacing:0.01em;margin-bottom:20px;opacity:0;animation:fadeUp 0.6s var(--ease) 0.18s forwards}
+.hero-plan-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-3);background:var(--surface-2);border:1px solid var(--line-2);padding:4px 12px;border-radius:1px;margin-bottom:16px;display:inline-block;opacity:0;animation:fadeUp 0.5s ease 0.15s forwards}
+.hero h1{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(72px,12vw,128px);line-height:0.92;letter-spacing:0.01em;margin-bottom:20px;opacity:0;animation:fadeUp 0.6s ease 0.18s forwards}
 .hero h1 .acc{color:var(--wine-bright)}
-.hero-desc{font-family:var(--font-mono);font-size:var(--fs-sm);color:var(--ink-2);max-width:500px;line-height:1.75;font-weight:300;opacity:0;animation:fadeUp 0.6s var(--ease) 0.28s forwards}
-.hero-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px;opacity:0;animation:fadeUp 0.6s var(--ease) 0.36s forwards}
-.chip{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.06em;padding:4px 12px;border:1px solid var(--line-2);border-radius:1px;color:var(--ink-3);transition:all 0.2s}
-.chip:hover{border-color:var(--ink-3);color:var(--ink-2)}
+.hero-desc{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-2);max-width:500px;line-height:1.75;font-weight:300;opacity:0;animation:fadeUp 0.6s ease 0.28s forwards}
+.hero-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px;opacity:0;animation:fadeUp 0.6s ease 0.36s forwards}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em;padding:4px 12px;border:1px solid var(--line-2);border-radius:1px;color:var(--ink-3);transition:all 0.2s}
 .chip.hi{border-color:var(--wine);color:var(--wine-bright);background:var(--wine-dim)}
-.hero-aside{opacity:0;animation:fadeUp 0.6s var(--ease) 0.2s forwards;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-.hero-big{font-family:var(--font-display);font-size:clamp(72px,12vw,130px);line-height:0.92;color:var(--line-2);user-select:none;transition:color 0.3s var(--ease);cursor:default}
+.hero-aside{opacity:0;animation:fadeUp 0.6s ease 0.2s forwards;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.hero-big{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(72px,12vw,128px);line-height:0.92;color:var(--line-2);user-select:none;transition:color 0.3s;cursor:default}
 .hero-big:hover{color:var(--wine-bright)}
-.hero-big-sub{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.12em;color:var(--ink-3);text-transform:uppercase}
+.hero-big-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;color:var(--ink-3);text-transform:uppercase}
 .hero-plan-track{display:flex;gap:4px;margin-top:8px}
 .plan-dot{width:22px;height:2px;background:var(--line-2)}
 .plan-dot.active{background:var(--wine)}
 
-.sec-label{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:18px;display:flex;align-items:center;gap:12px}
+.sec-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:18px;display:flex;align-items:center;gap:12px}
 .sec-label::after{content:'';flex:1;height:1px;background:var(--line)}
 
-.version-bar{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.1em;color:var(--wine-bright);background:var(--wine-dim);border:1px solid var(--wine-mid);padding:7px 15px;border-radius:1px;margin-bottom:40px;opacity:0;animation:fadeUp 0.5s var(--ease) 0.45s forwards}
+.version-bar{display:inline-flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--wine-bright);background:var(--wine-dim);border:1px solid var(--wine-mid);padding:7px 15px;border-radius:1px;margin-bottom:40px;opacity:0;animation:fadeUp 0.5s ease 0.45s forwards}
 .pulse{width:5px;height:5px;border-radius:50%;background:var(--wine-bright);animation:blink 1.4s ease-in-out infinite}
 
-.alert{border:1px solid var(--line-2);border-left:2px solid var(--wine);padding:16px 20px;margin-bottom:40px;background:var(--surface);opacity:0;animation:fadeUp 0.5s var(--ease) 0.5s forwards}
-.alert-label{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.14em;text-transform:uppercase;color:var(--wine-bright);margin-bottom:6px}
-.alert-text{font-family:var(--font-mono);font-size:var(--fs-sm);color:var(--ink-2);line-height:1.65;font-weight:300}
+.alert{border:1px solid var(--line-2);border-left:2px solid var(--wine);padding:16px 20px;margin-bottom:40px;background:var(--surface);opacity:0;animation:fadeUp 0.5s ease 0.5s forwards}
+.alert-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--wine-bright);margin-bottom:6px}
+.alert-text{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-2);line-height:1.65;font-weight:300}
 
-.legend-row{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:36px;padding-bottom:24px;border-bottom:1px solid var(--line);opacity:0;animation:fadeUp 0.5s var(--ease) 0.55s forwards}
-.leg{display:flex;align-items:center;gap:7px;font-size:var(--fs-sm);color:var(--ink-3);font-family:var(--font-mono)}
+/* ACTIVITIES */
+.activities-section{margin-bottom:48px}
+.activities-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.activity-card{background:var(--surface);border:1px solid var(--line-2);border-radius:2px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px}
+.activity-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.dot-active{background:var(--wine-bright);box-shadow:0 0 5px var(--wine-bright)}
+.dot-done{background:var(--teal)}
+.activity-title{font-size:13.5px;font-weight:400;margin-bottom:3px}
+.activity-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-3)}
+.activity-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:2px 7px;border-radius:1px;display:inline-block;margin-top:5px}
+.tag-active{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
+.tag-done  {background:var(--teal-dim);color:var(--teal);border:1px solid rgba(46,125,107,0.22)}
+
+.legend-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:32px;padding-bottom:22px;border-bottom:1px solid var(--line);opacity:0;animation:fadeUp 0.5s ease 0.55s forwards}
+.leg{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-3);font-family:'IBM Plex Mono',monospace}
 .leg-mark{width:14px;height:2px}
 
-/* TIMELINE */
+/* TIMELINE QUARTERS */
 .quarters{display:flex;flex-direction:column;gap:0;border-left:1px solid var(--line-2);margin-left:10px;padding-left:28px;margin-bottom:56px}
 .quarter{position:relative;margin-bottom:4px;opacity:0}
-.quarter.visible{animation:fadeUp 0.5s var(--ease) forwards}
-.quarter::before{content:'';position:absolute;left:-35px;top:22px;width:8px;height:8px;border-radius:50%;background:var(--line-2);border:1px solid var(--line-2);transition:all 0.3s var(--ease)}
+.quarter.visible{animation:fadeUp 0.5s ease forwards}
+.quarter::before{content:'';position:absolute;left:-35px;top:22px;width:8px;height:8px;border-radius:50%;background:var(--line-2);border:1px solid var(--line-2);transition:all 0.3s}
 .quarter[open]::before,.quarter:hover::before{background:var(--wine-bright);border-color:var(--wine-bright)}
-
-.q-summary{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:14px;padding:18px 20px;cursor:pointer;list-style:none;background:var(--surface);border:1px solid var(--line-2);transition:all 0.2s}
+.q-summary{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:14px;padding:17px 19px;cursor:pointer;list-style:none;background:var(--surface);border:1px solid var(--line-2);transition:all 0.2s}
 .q-summary:hover{background:var(--surface-2)}
 .q-summary::-webkit-details-marker{display:none}
 details[open]>.q-summary{border-color:var(--wine);border-bottom-color:var(--line-2)}
-
-.q-tag{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.1em;padding:4px 11px;border-radius:1px;white-space:nowrap}
+.q-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;padding:4px 10px;border-radius:1px;white-space:nowrap}
 .t-q1{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
 .t-q2{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
 .t-q3{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(46,125,107,0.25)}
 .t-q4{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(58,90,122,0.25)}
-
-.q-info .q-name{font-size:var(--fs-base);font-weight:400;color:var(--ink)}
-.q-info .q-sub{font-size:var(--fs-sm);color:var(--ink-3);margin-top:2px;font-family:var(--font-mono)}
-
+.q-info .q-name{font-size:15px;font-weight:400}
+.q-info .q-sub{font-size:12px;color:var(--ink-3);margin-top:2px;font-family:'IBM Plex Mono',monospace}
 .q-progress-wrap{display:flex;align-items:center;gap:8px;min-width:90px}
 .q-progress-bar{flex:1;height:2px;background:var(--line-2);overflow:hidden}
-.q-progress-fill{height:100%;background:var(--wine);transition:width 0.5s var(--ease);width:0%}
-.q-progress-pct{font-family:var(--font-mono);font-size:var(--fs-label);color:var(--ink-3);white-space:nowrap}
-
-.q-chevron{color:var(--ink-3);font-size:16px;transition:transform 0.3s var(--ease);flex-shrink:0}
+.q-progress-fill{height:100%;background:var(--wine);transition:width 0.5s ease;width:0%}
+.q-progress-pct{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-3);white-space:nowrap}
+.q-chevron{color:var(--ink-3);font-size:16px;transition:transform 0.3s ease;flex-shrink:0}
 details[open] .q-chevron{transform:rotate(180deg)}
-.q-body{background:var(--surface);border:1px solid var(--line-2);border-top:none;padding:0 20px 22px}
+.q-body{background:var(--surface);border:1px solid var(--line-2);border-top:none;padding:0 19px 20px}
 
-/* CEIC tag */
-.ceic-tag{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;padding:2px 8px;border-radius:1px;background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid);text-transform:uppercase;margin-bottom:10px}
-.ceic-date{font-family:var(--font-mono);font-size:9px;color:var(--ink-3);margin-left:4px}
+.ceic-tag{display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.08em;padding:2px 8px;border-radius:1px;background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid);text-transform:uppercase;margin-bottom:8px}
+.ceic-date{font-size:9px;color:var(--ink-3);margin-left:4px}
 
-.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);overflow:hidden;margin:8px 0 14px}
-.pillar{background:var(--base);padding:16px 14px;border-top:2px solid transparent;transition:background 0.2s}
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);overflow:hidden;margin:8px 0 14px}
+.pillar{background:var(--bg);padding:14px 13px;border-top:2px solid transparent;transition:background 0.2s}
 .pillar:hover{background:var(--surface-2)}
-
 .p-red  {border-top-color:var(--wine-bright)}
 .p-ceic {border-top-color:var(--amber)}
 .p-lab  {border-top-color:var(--teal)}
-.p-biz  {border-top-color:#7B6DD8}
-.p-qa   {border-top-color:#3A9D85}
-
-.p-title{font-family:var(--font-mono);font-size:var(--fs-label);font-weight:500;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px}
+.p-biz  {border-top-color:var(--purple)}
+.p-qa   {border-top-color:var(--green)}
+.p-title{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px}
 .p-red  .p-title{color:var(--wine-bright)}
 .p-ceic .p-title{color:var(--amber)}
 .p-lab  .p-title{color:var(--teal)}
-.p-biz  .p-title{color:#7B6DD8}
-.p-qa   .p-title{color:#3A9D85}
-
-.status-row{margin-bottom:8px}
-.status-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;padding:2px 8px;border-radius:1px;text-transform:uppercase}
+.p-biz  .p-title{color:var(--purple)}
+.p-qa   .p-title{color:var(--green)}
+.status-row{margin-bottom:7px}
+.status-badge{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.08em;padding:2px 7px;border-radius:1px;text-transform:uppercase}
 .s-current{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
 .s-pending{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
 .s-locked {background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line-2)}
-.s-new    {background:rgba(123,109,216,0.10);color:#7B6DD8;border:1px solid rgba(123,109,216,0.22)}
-
+.s-new    {background:var(--purple-dim);color:var(--purple);border:1px solid rgba(123,109,216,0.22)}
 .task-list{list-style:none}
-.task-item{display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:opacity 0.2s}
+.task-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);cursor:pointer}
 .task-item:last-child{border-bottom:none}
-.task-check{width:14px;height:14px;border:1px solid var(--line-2);border-radius:1px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all 0.2s}
+.task-check{width:13px;height:13px;border:1px solid var(--line-2);border-radius:1px;flex-shrink:0;margin-top:3px;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all 0.2s}
 .task-item:hover .task-check{border-color:var(--ink-3)}
 .task-item.done .task-check{background:var(--wine);border-color:var(--wine);color:var(--ink)}
 .task-item.done .task-text{text-decoration:line-through;opacity:0.38}
-.task-text{font-size:var(--fs-task);color:var(--ink-2);line-height:1.5;font-family:var(--font-mono);font-weight:300}
+.task-text{font-size:13px;color:var(--ink-2);line-height:1.5;font-family:'IBM Plex Mono',monospace;font-weight:300}
 .task-text a{color:inherit;text-decoration:underline;text-decoration-color:var(--line-2);transition:color 0.2s}
 .task-text a:hover{color:var(--wine-bright)}
-
-.kpis{display:flex;flex-wrap:wrap;gap:6px;padding-top:13px;border-top:1px solid var(--line)}
-.kpi{font-family:var(--font-mono);font-size:var(--fs-label);padding:5px 11px;border-radius:1px;display:flex;align-items:center;gap:4px}
+.kpis{display:flex;flex-wrap:wrap;gap:5px;padding-top:12px;border-top:1px solid var(--line)}
+.kpi{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:4px 10px;border-radius:1px;display:flex;align-items:center;gap:4px}
 .kpi::before{content:'✓'}
 .kpi-red {background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
 .kpi-ceic{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
 .kpi-lab {background:var(--teal-dim);color:var(--teal);border:1px solid rgba(46,125,107,0.2)}
-.kpi-biz {background:rgba(123,109,216,0.08);color:#7B6DD8;border:1px solid rgba(123,109,216,0.18)}
-.kpi-qa  {background:rgba(58,157,133,0.07);color:#3A9D85;border:1px solid rgba(58,157,133,0.18)}
+.kpi-biz {background:var(--purple-dim);color:var(--purple);border:1px solid rgba(123,109,216,0.2)}
+.kpi-qa  {background:var(--green-dim);color:var(--green);border:1px solid rgba(58,157,133,0.2)}
 
 /* CERTS */
-.certs-section{margin-top:48px;margin-bottom:48px}
+.certs-section{margin-top:40px;margin-bottom:48px}
 .certs-track{display:flex;align-items:stretch;gap:0;overflow-x:auto}
-.cert-item{background:var(--surface);border:1px solid var(--line-2);padding:16px 18px;flex:1;min-width:150px}
+.cert-item{background:var(--surface);border:1px solid var(--line-2);padding:14px 16px;flex:1;min-width:140px}
 .cert-item+.cert-item{border-left:none}
 .cert-item.active-cert{border-color:var(--wine);background:var(--wine-dim)}
-.cert-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px}
-.cert-name{font-size:var(--fs-sm);font-weight:400;margin-bottom:4px;color:var(--ink)}
-.cert-when{font-family:var(--font-mono);font-size:9px;color:var(--ink-3)}
+.cert-badge{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px}
+.cert-name{font-size:13px;font-weight:400;margin-bottom:4px;color:var(--ink)}
+.cert-when{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-3)}
 .cert-item.active-cert .cert-badge{color:var(--wine-bright)}
 .cert-item:not(.active-cert) .cert-badge{color:var(--ink-3)}
 
+/* PROJECTS */
+.projects-section{margin-bottom:48px}
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.project-card{background:var(--surface);border:1px solid var(--line-2);border-radius:2px;padding:16px;transition:border-color 0.2s,transform 0.2s}
+.project-card:hover{border-color:var(--wine);transform:translateY(-2px)}
+.project-type{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px}
+.project-name{font-size:13.5px;font-weight:400;margin-bottom:6px;color:var(--ink)}
+.project-desc{font-size:12px;color:var(--ink-2);line-height:1.55;margin-bottom:10px;font-family:'IBM Plex Mono',monospace;font-weight:300}
+.project-stack{display:flex;flex-wrap:wrap;gap:4px}
+.stack-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:2px 7px;border-radius:1px;background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line-2)}
+
 /* NOTES */
-.notes-section{margin-top:48px;margin-bottom:48px}
-.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.note-block{background:var(--surface);border:1px solid var(--line-2);padding:18px}
-.note-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
-.note-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:var(--fs-label);font-weight:500;flex-shrink:0}
-.note-avatar.el{background:var(--wine-dim);border:1px solid var(--wine-mid);color:var(--wine-bright)}
-.note-avatar.er{background:var(--amber-dim);border:1px solid var(--amber-mid);color:var(--amber)}
-.note-info .note-name{font-size:var(--fs-base);font-weight:400;color:var(--ink)}
-.note-info .note-role{font-family:var(--font-mono);font-size:var(--fs-label);color:var(--ink-3);margin-top:2px}
-.note-focus{font-family:var(--font-mono);font-size:var(--fs-label);margin-top:6px;padding:5px 10px;border-radius:1px;line-height:1.5}
-.note-focus.el{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
-.note-focus.er{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
-.note-area{width:100%;min-height:120px;background:var(--base);border:1px solid var(--line-2);padding:12px;font-family:var(--font-mono);font-size:var(--fs-sm);font-weight:300;color:var(--ink);resize:vertical;outline:none;line-height:1.6;transition:border-color 0.2s}
+.notes-section{margin-bottom:48px}
+.notes-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.note-block{background:var(--surface);border:1px solid var(--line-2);padding:16px}
+.note-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.note-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;flex-shrink:0}
+.av-larissa{background:var(--lavender-dim);border:1px solid var(--lavender-mid);color:var(--lavender)}
+.av-elton  {background:var(--wine-dim);border:1px solid var(--wine-mid);color:var(--wine-bright)}
+.av-eric   {background:var(--amber-dim);border:1px solid var(--amber-mid);color:var(--amber)}
+.note-info .note-name{font-size:14px;font-weight:400}
+.note-info .note-role{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-3);margin-top:2px}
+.note-focus{font-family:'IBM Plex Mono',monospace;font-size:10px;margin-top:5px;padding:4px 9px;border-radius:1px;line-height:1.5}
+.nf-larissa{background:var(--lavender-dim);color:var(--lavender);border:1px solid var(--lavender-mid)}
+.nf-elton  {background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
+.nf-eric   {background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
+.note-area{width:100%;min-height:100px;background:var(--bg);border:1px solid var(--line-2);padding:10px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:300;color:var(--ink);resize:vertical;outline:none;line-height:1.6;transition:border-color 0.2s}
 .note-area:focus{border-color:var(--wine)}
 .note-area::placeholder{color:var(--ink-3)}
-.note-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-.note-save-btn{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.06em;padding:5px 12px;border:1px solid var(--line-2);border-radius:1px;background:transparent;color:var(--ink-3);cursor:pointer;transition:all 0.2s}
+.note-footer{display:flex;justify-content:space-between;align-items:center;margin-top:7px}
+.note-save-btn{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em;padding:5px 11px;border:1px solid var(--line-2);border-radius:1px;background:transparent;color:var(--ink-3);cursor:pointer;transition:all 0.2s}
 .note-save-btn:hover{border-color:var(--wine);color:var(--wine-bright);background:var(--wine-dim)}
-.note-saved-msg{font-family:var(--font-mono);font-size:var(--fs-label);color:var(--wine-bright);opacity:0;transition:opacity 0.3s}
+.note-saved-msg{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--wine-bright);opacity:0;transition:opacity 0.3s}
 .note-saved-msg.show{opacity:1}
 
-.roadmap{border:1px solid var(--line-2);padding:22px 26px;background:var(--surface);opacity:0;animation:fadeUp 0.5s var(--ease) 0.2s forwards}
-.roadmap-label{font-family:var(--font-mono);font-size:var(--fs-label);letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
-.roadmap-sublabel{font-size:var(--fs-sm);color:var(--ink-3);font-family:var(--font-mono);font-weight:300;margin-bottom:16px}
+.roadmap{border:1px solid var(--line-2);padding:20px 24px;background:var(--surface);margin-bottom:48px}
+.roadmap-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+.roadmap-sublabel{font-size:13px;color:var(--ink-3);font-family:'IBM Plex Mono',monospace;font-weight:300;margin-bottom:14px}
 .roadmap-track{display:flex;align-items:center;flex-wrap:wrap;gap:0}
-.rs{font-size:var(--fs-sm);font-weight:400;padding:8px 16px;border-radius:1px;white-space:nowrap}
+.rs{font-size:13px;font-weight:400;padding:7px 14px;border-radius:1px;white-space:nowrap}
 .rs.now {background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
 .rs.mid {background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
 .rs.next{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(46,125,107,0.25)}
 .rs.far {background:transparent;color:var(--ink-3);border:1px solid var(--line)}
 .rs-sep {color:var(--line-2);padding:0 8px;font-size:18px}
 
-footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:var(--font-mono);font-size:var(--fs-label);color:var(--ink-3)}
+footer{padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-3)}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
 
-@media(max-width:700px){
+@media(max-width:720px){
   .hero{grid-template-columns:1fr}.hero-aside{display:none}
   .quarters{margin-left:0;padding-left:14px}
-  .pillars{grid-template-columns:1fr 1fr}.notes-grid{grid-template-columns:1fr}
-  .roadmap-track{flex-direction:column;align-items:flex-start;gap:8px}
-  .certs-track{flex-direction:column}
+  .pillars{grid-template-columns:1fr 1fr}
+  .notes-grid{grid-template-columns:1fr}
+  .activities-grid{grid-template-columns:1fr}
 }
 @media(max-width:480px){.pillars{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
@@ -218,6 +238,14 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
 </head>
 <body>
 <div class="page">
+
+<nav class="topnav">
+  <a class="back-btn" href="index.html">← Voltar ao início</a>
+  <div class="topnav-right">
+    <span class="page-label">PDI Cyber-focused</span>
+    <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
+  </div>
+</nav>
 
 <header class="hero">
   <div class="hero-left">
@@ -228,7 +256,7 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
     <div class="hero-chips">
       <span class="chip hi">Cybersecurity-focused</span>
       <span class="chip">Denizard · FC</span>
-      <span class="chip">Elton · Eric</span>
+      <span class="chip">Larissa · Elton · Eric</span>
       <span class="chip">CEIC Red Team · eJPT</span>
     </div>
   </div>
@@ -236,9 +264,7 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
     <div class="hero-big">12</div>
     <div class="hero-big-sub">meses · plano 1</div>
     <div class="hero-plan-track">
-      <div class="plan-dot active"></div>
-      <div class="plan-dot"></div>
-      <div class="plan-dot"></div>
+      <div class="plan-dot active"></div><div class="plan-dot"></div><div class="plan-dot"></div>
     </div>
   </div>
 </header>
@@ -246,23 +272,77 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
 <div class="version-bar"><span class="pulse"></span>v3.0 · cybersecurity-focused · ceic red team · 5 pilares · plano 1/3</div>
 
 <div class="alert">
-  <div class="alert-label">Contexto estratégico — Elton & Eric</div>
-  <div class="alert-text">Este PDI apresenta a trajetória de migração para Cybersecurity de forma transparente. O argumento: conhecimento ofensivo aprofunda QA (encontrar falhas antes do adversário) e gera valor imediato para a FC. A meta de 3 anos é Pentester / Security Analyst na própria empresa. Este é o Plano 1 de 3.</div>
+  <div class="alert-label">Contexto estratégico — Larissa, Elton & Eric</div>
+  <div class="alert-text">Este PDI apresenta a trajetória de migração para Cybersecurity de forma transparente. Conhecimento ofensivo aprofunda QA e gera valor imediato para a FC. Meta de 3 anos: Pentester / Security Analyst na própria empresa. Este é o Plano 1 de 3.</div>
+</div>
+
+<!-- ACTIVITIES -->
+<div class="activities-section">
+  <div class="sec-label">Atividades em andamento & concluídas</div>
+  <div class="activities-grid">
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">OverTheWire Bandit</div>
+        <div class="activity-meta">Nível 10–15 · 2h/dia útil</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">HTB Starting Point</div>
+        <div class="activity-meta">Introdução · conta criada</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">Fortinet NSE 1 / 2</div>
+        <div class="activity-meta">Certificação gratuita</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">Pós-graduação CEIC/UFPE</div>
+        <div class="activity-meta">Red Team + Blue Team · primeiros módulos</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-done"></div>
+      <div class="activity-content">
+        <div class="activity-title">Kali Linux VM</div>
+        <div class="activity-meta">VMware Workstation configurado</div>
+        <span class="activity-tag tag-done">Configurado</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-done"></div>
+      <div class="activity-content">
+        <div class="activity-title">Aspectos de Segurança da Informação</div>
+        <div class="activity-meta">CEIC · módulo inicial</div>
+        <span class="activity-tag tag-done">Iniciado</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="sec-label">Pilares</div>
 <div class="legend-row">
-  <div class="leg"><div class="leg-mark" style="background:var(--wine-bright)"></div>Red Team / Segurança ofensiva</div>
-  <div class="leg"><div class="leg-mark" style="background:var(--amber)"></div>CEIC — ementa Red Team (datas reais)</div>
-  <div class="leg"><div class="leg-mark" style="background:var(--teal)"></div>Labs externos + CTFs (2h/dia)</div>
-  <div class="leg"><div class="leg-mark" style="background:#7B6DD8"></div>Regras de negócio & impacto sistêmico</div>
-  <div class="leg"><div class="leg-mark" style="background:#3A9D85"></div>QA como base técnica (FC)</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--wine-bright)"></div>Red Team / Ofensivo</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--amber)"></div>CEIC — ementa (datas reais)</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--teal)"></div>Labs externos + CTFs</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--purple)"></div>Negócio & impacto sistêmico</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--green)"></div>QA como base técnica</div>
 </div>
 
 <div class="sec-label">Trimestres</div>
 <div class="quarters" id="quarters">
 
-<!-- T1 -->
 <details class="quarter" data-q="q1" open>
   <summary class="q-summary">
     <span class="q-tag t-q1">T1 · Out/2025 – Jan/2026</span>
@@ -279,41 +359,41 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
   <div class="q-body">
     <div class="pillars">
       <div class="pillar p-red">
-        <div class="p-title">Red Team — fundamentos Linux</div>
+        <div class="p-title">Red Team — fundamentos</div>
         <div class="status-row"><span class="status-badge s-current">Em andamento</span></div>
         <ul class="task-list">
           <li class="task-item" data-id="q1-r1"><div class="task-check"></div><span class="task-text"><a href="https://overthewire.org/wargames/bandit/" target="_blank">OverTheWire Bandit ↗</a> — avançar do nível 15 até 25</span></li>
-          <li class="task-item" data-id="q1-r2"><div class="task-check"></div><span class="task-text">Refinar ambiente <a href="https://www.kali.org/get-kali/" target="_blank">Kali Linux VM ↗</a> — dominar grep, find, netcat, curl, ssh tunneling</span></li>
+          <li class="task-item" data-id="q1-r2"><div class="task-check"></div><span class="task-text">Refinar <a href="https://www.kali.org/get-kali/" target="_blank">Kali Linux VM ↗</a> — dominar grep, find, netcat, curl, ssh tunneling</span></li>
           <li class="task-item" data-id="q1-r3"><div class="task-check"></div><span class="task-text">Estudar fases do pentest: reconhecimento, enumeração, exploração, pós-exploração</span></li>
-          <li class="task-item" data-id="q1-r4"><div class="task-check"></div><span class="task-text">Criar repositório público no GitHub para write-ups e notas dos labs</span></li>
+          <li class="task-item" data-id="q1-r4"><div class="task-check"></div><span class="task-text">Criar repositório GitHub para write-ups e notas dos labs</span></li>
         </ul>
       </div>
       <div class="pillar p-ceic">
         <div class="p-title">CEIC — Aspectos Seg. Info</div>
         <div class="ceic-tag">📚 CEIC Red Team<span class="ceic-date">30/Mai → 14/Jun 2026</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q1-c1"><div class="task-check"></div><span class="task-text">Estudar malware types antecipadamente: vírus, worm, trojan, rootkit, backdoor, spyware</span></li>
+          <li class="task-item" data-id="q1-c1"><div class="task-check"></div><span class="task-text">Estudar malware types: vírus, worm, trojan, rootkit, backdoor, spyware</span></li>
           <li class="task-item" data-id="q1-c2"><div class="task-check"></div><span class="task-text">Engenharia social e phishing — material antes das aulas de mai/2026</span></li>
-          <li class="task-item" data-id="q1-c3"><div class="task-check"></div><span class="task-text">Concluir <a href="https://training.fortinet.com/local/staticpage/view.php?page=nse-2" target="_blank">Fortinet NSE 2 ↗</a> + <a href="https://training.fortinet.com/local/staticpage/view.php?page=nse-3" target="_blank">NSE 3 ↗</a> (você está no NSE 1/2)</span></li>
-          <li class="task-item" data-id="q1-c4"><div class="task-check"></div><span class="task-text">Praticar Kali Linux antecipando o conteúdo da aula híbrida de 31/mai</span></li>
+          <li class="task-item" data-id="q1-c3"><div class="task-check"></div><span class="task-text">Concluir <a href="https://training.fortinet.com/local/staticpage/view.php?page=nse-2" target="_blank">NSE 2 ↗</a> + <a href="https://training.fortinet.com/local/staticpage/view.php?page=nse-3" target="_blank">NSE 3 ↗</a></span></li>
+          <li class="task-item" data-id="q1-c4"><div class="task-check"></div><span class="task-text">Praticar Kali Linux antecipando aula híbrida de 31/mai</span></li>
         </ul>
       </div>
       <div class="pillar p-lab">
         <div class="p-title">Labs externos</div>
         <div class="status-row"><span class="status-badge s-current">2h/dia útil</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q1-l1"><div class="task-check"></div><span class="task-text"><a href="https://tryhackme.com/path/outline/presecurity" target="_blank">TryHackMe — Pre-Security Path ↗</a> (redes, Linux, web fundamentals)</span></li>
+          <li class="task-item" data-id="q1-l1"><div class="task-check"></div><span class="task-text"><a href="https://tryhackme.com/path/outline/presecurity" target="_blank">TryHackMe — Pre-Security Path ↗</a></span></li>
           <li class="task-item" data-id="q1-l2"><div class="task-check"></div><span class="task-text"><a href="https://www.hackthebox.com/starting-point" target="_blank">HTB Starting Point ↗</a> — completar todos os labs gratuitos</span></li>
-          <li class="task-item" data-id="q1-l3"><div class="task-check"></div><span class="task-text">Mapear superfície de ataque da aplicação FC: endpoints, auth, inputs, uploads, banco</span></li>
+          <li class="task-item" data-id="q1-l3"><div class="task-check"></div><span class="task-text">Mapear superfície de ataque da FC: endpoints, auth, inputs, uploads, banco</span></li>
         </ul>
       </div>
       <div class="pillar p-biz">
-        <div class="p-title">Negócio & Impacto Sistêmico</div>
+        <div class="p-title">Negócio & Impacto</div>
         <div class="status-row"><span class="status-badge s-new">Novo pilar</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q1-bz1"><div class="task-check"></div><span class="task-text">Mapear os fluxos críticos de negócio da FC que seriam os mais impactantes se comprometidos</span></li>
-          <li class="task-item" data-id="q1-bz2"><div class="task-check"></div><span class="task-text">Entender a arquitetura da integração SellerCenter/Anymarket com Eric — quais são os pontos de falha?</span></li>
-          <li class="task-item" data-id="q1-bz3"><div class="task-check"></div><span class="task-text">Documentar: "se um atacante comprometesse X, qual seria o impacto de negócio?" para 3 sistemas da FC</span></li>
+          <li class="task-item" data-id="q1-bz1"><div class="task-check"></div><span class="task-text">Mapear fluxos críticos da FC que seriam mais impactantes se comprometidos</span></li>
+          <li class="task-item" data-id="q1-bz2"><div class="task-check"></div><span class="task-text">Entender arquitetura da integração SellerCenter/Anymarket com Eric — pontos de falha?</span></li>
+          <li class="task-item" data-id="q1-bz3"><div class="task-check"></div><span class="task-text">"Se atacante comprometesse X, qual seria o impacto de negócio?" — documentar para 3 sistemas</span></li>
         </ul>
       </div>
       <div class="pillar p-qa">
@@ -328,21 +408,20 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
     </div>
     <div class="kpis">
       <span class="kpi kpi-red">Bandit nível 25 concluído</span>
-      <span class="kpi kpi-ceic">NSE 2 + NSE 3 concluídos</span>
+      <span class="kpi kpi-ceic">NSE 2 + 3 concluídos</span>
       <span class="kpi kpi-lab">HTB Starting Point completo</span>
-      <span class="kpi kpi-biz">Mapa de impacto de negócio da FC criado</span>
-      <span class="kpi kpi-qa">Checklist de segurança em PRs criado</span>
+      <span class="kpi kpi-biz">Mapa de impacto de negócio da FC</span>
+      <span class="kpi kpi-qa">Checklist de segurança em PRs</span>
     </div>
   </div>
 </details>
 
-<!-- T2 -->
 <details class="quarter" data-q="q2">
   <summary class="q-summary">
     <span class="q-tag t-q2">T2 · Jan/2026 – Abr/2026</span>
     <div class="q-info">
       <div class="q-name">OSINT + Web Pentest I — exploração começa</div>
-      <div class="q-sub">CEIC OSINT I (Jul/2026) · TryHackMe Jr Pentester · 1ª máquina HTB · impacto arquitetural</div>
+      <div class="q-sub">CEIC OSINT I (Jul/2026) · TryHackMe Jr Pentester · 1ª máquina HTB</div>
     </div>
     <div class="q-progress-wrap">
       <div class="q-progress-bar"><div class="q-progress-fill" id="prog-q2"></div></div>
@@ -358,65 +437,61 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
         <ul class="task-list">
           <li class="task-item" data-id="q2-r1"><div class="task-check"></div><span class="task-text"><a href="https://tryhackme.com/path/outline/jrpenetrationtester" target="_blank">TryHackMe — Jr Penetration Tester ↗</a> (módulos 1–5)</span></li>
           <li class="task-item" data-id="q2-r2"><div class="task-check"></div><span class="task-text"><a href="https://owasp.org/www-project-top-ten/" target="_blank">OWASP Top 10 ↗</a> com labs em <a href="https://dvwa.co.uk/" target="_blank">DVWA ↗</a> e <a href="https://owasp.org/www-project-webgoat/" target="_blank">WebGoat ↗</a></span></li>
-          <li class="task-item" data-id="q2-r3"><div class="task-check"></div><span class="task-text">Enumeração: <a href="https://nmap.org/" target="_blank">Nmap ↗</a>, <a href="https://github.com/OJ/gobuster" target="_blank">Gobuster ↗</a>, <a href="https://cirt.net/Nikto2" target="_blank">Nikto ↗</a> em labs</span></li>
-          <li class="task-item" data-id="q2-r4"><div class="task-check"></div><span class="task-text"><a href="https://www.hackthebox.com/" target="_blank">HackTheBox ↗</a> — 1ª máquina Very Easy com write-up publicado</span></li>
+          <li class="task-item" data-id="q2-r3"><div class="task-check"></div><span class="task-text">Enumeração: <a href="https://nmap.org/" target="_blank">Nmap ↗</a>, <a href="https://github.com/OJ/gobuster" target="_blank">Gobuster ↗</a>, Nikto em labs</span></li>
+          <li class="task-item" data-id="q2-r4"><div class="task-check"></div><span class="task-text"><a href="https://www.hackthebox.com/" target="_blank">HackTheBox ↗</a> — 1ª máquina Very Easy com write-up</span></li>
         </ul>
       </div>
       <div class="pillar p-ceic">
         <div class="p-title">CEIC — OSINT I</div>
         <div class="ceic-tag">📚 CEIC Red Team<span class="ceic-date">04 → 19/Jul 2026</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q2-c1"><div class="task-check"></div><span class="task-text">Estudar OSINT antecipadamente: <a href="https://www.maltego.com/" target="_blank">Maltego ↗</a>, <a href="https://www.shodan.io/" target="_blank">Shodan ↗</a>, <a href="https://github.com/laramies/theHarvester" target="_blank">theHarvester ↗</a></span></li>
-          <li class="task-item" data-id="q2-c2"><div class="task-check"></div><span class="task-text">Google Dorks: levantar exposição pública da FC (autorizado) — domínios, emails, infra</span></li>
-          <li class="task-item" data-id="q2-c3"><div class="task-check"></div><span class="task-text">OSINT para telefones e redes sociais — praticar com perfis públicos</span></li>
-          <li class="task-item" data-id="q2-c4"><div class="task-check"></div><span class="task-text">Entender phishing, clonagem de WhatsApp, golpes on-line (conteúdo da aula CEIC)</span></li>
+          <li class="task-item" data-id="q2-c1"><div class="task-check"></div><span class="task-text"><a href="https://www.maltego.com/" target="_blank">Maltego ↗</a>, <a href="https://www.shodan.io/" target="_blank">Shodan ↗</a>, <a href="https://github.com/laramies/theHarvester" target="_blank">theHarvester ↗</a> — antecipar conteúdo OSINT</span></li>
+          <li class="task-item" data-id="q2-c2"><div class="task-check"></div><span class="task-text">Google Dorks: levantar exposição pública da FC (autorizado)</span></li>
+          <li class="task-item" data-id="q2-c3"><div class="task-check"></div><span class="task-text">Entender phishing, clonagem de WhatsApp, golpes on-line (conteúdo CEIC)</span></li>
+          <li class="task-item" data-id="q2-c4"><div class="task-check"></div><span class="task-text">Iniciar trilha <a href="https://www.securityblue.team/courses/blue-team-junior-analyst-pathway" target="_blank">BTJA — Security Blue Team ↗</a></span></li>
         </ul>
       </div>
       <div class="pillar p-lab">
         <div class="p-title">Labs — primeiros CTFs</div>
-        <div class="status-row"><span class="status-badge s-pending">A iniciar</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q2-l1"><div class="task-check"></div><span class="task-text">Participar do <a href="https://picoctf.org/" target="_blank">PicoCTF ↗</a> — plataforma aberta, ideal para iniciantes</span></li>
+          <li class="task-item" data-id="q2-l1"><div class="task-check"></div><span class="task-text"><a href="https://picoctf.org/" target="_blank">PicoCTF ↗</a> — plataforma sempre aberta, ideal para iniciantes</span></li>
           <li class="task-item" data-id="q2-l2"><div class="task-check"></div><span class="task-text">Resolver 5+ challenges de Web e Linux no <a href="https://ctftime.org/" target="_blank">CTFtime ↗</a></span></li>
-          <li class="task-item" data-id="q2-l3"><div class="task-check"></div><span class="task-text">Iniciar trilha <a href="https://www.securityblue.team/courses/blue-team-junior-analyst-pathway" target="_blank">BTJA — Security Blue Team ↗</a></span></li>
+          <li class="task-item" data-id="q2-l3"><div class="task-check"></div><span class="task-text">Fortinet <a href="https://training.fortinet.com/local/staticpage/view.php?page=nse-4" target="_blank">NSE 4 ↗</a> (fundamentos de segurança de rede)</span></li>
         </ul>
       </div>
       <div class="pillar p-biz">
-        <div class="p-title">Negócio & Impacto Sistêmico</div>
-        <div class="status-row"><span class="status-badge s-locked">Bloqueado até T1</span></div>
+        <div class="p-title">Negócio & Impacto</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q2-bz1"><div class="task-check"></div><span class="task-text">Quando um novo framework chegar na FC: perguntar ao Eric o impacto arquitetural esperado antes de qualquer teste</span></li>
-          <li class="task-item" data-id="q2-bz2"><div class="task-check"></div><span class="task-text">Aplicar OSINT na FC (autorizado): o que um atacante consegue levantar sobre a empresa sem acesso interno?</span></li>
-          <li class="task-item" data-id="q2-bz3"><div class="task-check"></div><span class="task-text">Documentar: "quais sistemas da FC teriam o maior impacto se expostos publicamente?" — levar para Eric revisar</span></li>
-          <li class="task-item" data-id="q2-bz4"><div class="task-check"></div><span class="task-text">Propor ao Elton: "análise de superfície de ataque" como etapa formal antes dos testes de cada release</span></li>
+          <li class="task-item" data-id="q2-bz1"><div class="task-check"></div><span class="task-text">Quando framework novo chegar na FC: perguntar ao Eric o impacto arquitetural antes de testar</span></li>
+          <li class="task-item" data-id="q2-bz2"><div class="task-check"></div><span class="task-text">Aplicar OSINT na FC (autorizado): o que um atacante consegue levantar sem acesso interno?</span></li>
+          <li class="task-item" data-id="q2-bz3"><div class="task-check"></div><span class="task-text">Propor ao Elton: "análise de superfície de ataque" antes dos testes de cada release</span></li>
         </ul>
       </div>
       <div class="pillar p-qa">
         <div class="p-title">QA — mentalidade ofensiva</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q2-q1"><div class="task-check"></div><span class="task-text">Testar inputs do SellerCenter/Anymarket: SQL injection básico em homolog com autorização</span></li>
+          <li class="task-item" data-id="q2-q1"><div class="task-check"></div><span class="task-text">Testar inputs do SellerCenter/Anymarket: SQL injection básico em homolog (autorizado)</span></li>
           <li class="task-item" data-id="q2-q2"><div class="task-check"></div><span class="task-text">Verificar headers HTTP de segurança (CSP, CORS, X-Frame-Options) nos deploys</span></li>
-          <li class="task-item" data-id="q2-q3"><div class="task-check"></div><span class="task-text">Reportar ao menos 1 vulnerabilidade encontrada via QA para o time (Jira + Eric)</span></li>
+          <li class="task-item" data-id="q2-q3"><div class="task-check"></div><span class="task-text">Reportar 1 vulnerabilidade encontrada via QA para o time (Jira + Eric)</span></li>
         </ul>
       </div>
     </div>
     <div class="kpis">
       <span class="kpi kpi-red">1ª máquina HTB + OWASP Top 10 labs</span>
-      <span class="kpi kpi-ceic">OSINT toolkit configurado + exercício FC</span>
+      <span class="kpi kpi-ceic">OSINT toolkit configurado + NSE 4</span>
       <span class="kpi kpi-lab">PicoCTF + BTJA iniciado</span>
-      <span class="kpi kpi-biz">Análise de superfície de ataque proposta ao Elton</span>
+      <span class="kpi kpi-biz">Superfície de ataque proposta ao Elton</span>
       <span class="kpi kpi-qa">1 vulnerabilidade reportada via QA</span>
     </div>
   </div>
 </details>
 
-<!-- T3 -->
 <details class="quarter" data-q="q3">
   <summary class="q-summary">
     <span class="q-tag t-q3">T3 · Abr/2026 – Jul/2026</span>
     <div class="q-info">
       <div class="q-name">Pentest I + Gerenciamento de Incidentes — CEIC intensifica</div>
-      <div class="q-sub">CEIC Pentest I Web (Ago/2026) · Incidentes (Set/2026) · eJPT prep · impacto nos sistemas FC</div>
+      <div class="q-sub">CEIC Pentest I Web (Ago/2026) · Incidentes (Set/2026) · eJPT prep</div>
     </div>
     <div class="q-progress-wrap">
       <div class="q-progress-bar"><div class="q-progress-fill" id="prog-q3"></div></div>
@@ -429,17 +504,17 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
       <div class="pillar p-red">
         <div class="p-title">Red Team — pentest web</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q3-r1"><div class="task-check"></div><span class="task-text"><a href="https://www.hackthebox.com/" target="_blank">HackTheBox ↗</a> — resolver 3 máquinas Easy com write-ups (total: 4)</span></li>
+          <li class="task-item" data-id="q3-r1"><div class="task-check"></div><span class="task-text"><a href="https://www.hackthebox.com/" target="_blank">HackTheBox ↗</a> — 3 máquinas Easy com write-ups (total: 4)</span></li>
           <li class="task-item" data-id="q3-r2"><div class="task-check"></div><span class="task-text">Privilege escalation Linux: <a href="https://tryhackme.com/module/privilege-escalation-and-containment" target="_blank">TryHackMe módulo ↗</a></span></li>
           <li class="task-item" data-id="q3-r3"><div class="task-check"></div><span class="task-text">Introdução ao <a href="https://www.metasploit.com/" target="_blank">Metasploit Framework ↗</a> em ambiente isolado</span></li>
-          <li class="task-item" data-id="q3-r4"><div class="task-check"></div><span class="task-text">Participar de 1 CTF ao vivo (<a href="https://ctftime.org/" target="_blank">CTFtime ↗</a>) com write-up publicado</span></li>
+          <li class="task-item" data-id="q3-r4"><div class="task-check"></div><span class="task-text">1 CTF ao vivo (<a href="https://ctftime.org/" target="_blank">CTFtime ↗</a>) com write-up publicado</span></li>
         </ul>
       </div>
       <div class="pillar p-ceic">
         <div class="p-title">CEIC — Pentest I + Incidentes</div>
         <div class="ceic-tag">📚 CEIC Red Team<span class="ceic-date">01/Ago + 29/Ago 2026</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q3-c1"><div class="task-check"></div><span class="task-text">Pentest I Web (01–16/Ago): levantamento, análises manuais, relatório executivo de pentest</span></li>
+          <li class="task-item" data-id="q3-c1"><div class="task-check"></div><span class="task-text">Pentest I Web (01–16/Ago): levantamento, análises manuais, relatório executivo</span></li>
           <li class="task-item" data-id="q3-c2"><div class="task-check"></div><span class="task-text">Gerenciamento de Incidentes (29/Ago–13/Set): identificação, resposta, plano de recuperação</span></li>
           <li class="task-item" data-id="q3-c3"><div class="task-check"></div><span class="task-text">Elaborar relatório de pentest completo como entrega da disciplina</span></li>
           <li class="task-item" data-id="q3-c4"><div class="task-check"></div><span class="task-text">Preparar para <a href="https://ine.com/learning/certifications/internal/elearnsecurity-junior-penetration-tester-cert" target="_blank">eJPT ↗</a> — trilha INE Security Starter</span></li>
@@ -454,20 +529,19 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
         </ul>
       </div>
       <div class="pillar p-biz">
-        <div class="p-title">Negócio & Impacto Sistêmico</div>
+        <div class="p-title">Negócio & Impacto</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q3-bz1"><div class="task-check"></div><span class="task-text">Usar conhecimento do Pentest I para simular: "se eu fosse atacar a FC, por onde entraria?" — documentar e apresentar ao Eric</span></li>
-          <li class="task-item" data-id="q3-bz2"><div class="task-check"></div><span class="task-text">Propor "Security Test Cases" no plano de testes do Jira conectando impacto de negócio com riscos de segurança</span></li>
-          <li class="task-item" data-id="q3-bz3"><div class="task-check"></div><span class="task-text">Criar plano de resposta a incidentes básico para a FC baseado no conteúdo da disciplina CEIC</span></li>
-          <li class="task-item" data-id="q3-bz4"><div class="task-check"></div><span class="task-text">Apresentar ao Elton: relatório de postura de QA com perspectiva de segurança da aplicação</span></li>
+          <li class="task-item" data-id="q3-bz1"><div class="task-check"></div><span class="task-text">Simular: "se eu fosse atacar a FC, por onde entraria?" — documentar e apresentar ao Eric</span></li>
+          <li class="task-item" data-id="q3-bz2"><div class="task-check"></div><span class="task-text">Criar plano de resposta a incidentes básico para a FC baseado na disciplina CEIC</span></li>
+          <li class="task-item" data-id="q3-bz3"><div class="task-check"></div><span class="task-text">Apresentar ao Larissa: relatório de postura de segurança e roadmap de melhorias</span></li>
         </ul>
       </div>
       <div class="pillar p-qa">
         <div class="p-title">QA — segurança sistematizada</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q3-q1"><div class="task-check"></div><span class="task-text">Análise de logs de servidor com Linux em incidentes — usar conhecimento do Bandit na prática</span></li>
-          <li class="task-item" data-id="q3-q2"><div class="task-check"></div><span class="task-text">Apresentar métricas de postura de segurança ao Elton (craft) e ao Eric (arquitetura)</span></li>
-          <li class="task-item" data-id="q3-q3"><div class="task-check"></div><span class="task-text">Propor threat model básico da aplicação FC (<a href="https://owasp.org/www-community/Threat_Modeling_Process" target="_blank">STRIDE/OWASP ↗</a>)</span></li>
+          <li class="task-item" data-id="q3-q1"><div class="task-check"></div><span class="task-text">Análise de logs de servidor em incidentes — usar conhecimento do Bandit na prática</span></li>
+          <li class="task-item" data-id="q3-q2"><div class="task-check"></div><span class="task-text">Propor threat model básico da aplicação FC (<a href="https://owasp.org/www-community/Threat_Modeling_Process" target="_blank">STRIDE/OWASP ↗</a>)</span></li>
+          <li class="task-item" data-id="q3-q3"><div class="task-check"></div><span class="task-text">Propor "Security Test Cases" formalmente no plano de testes do Jira</span></li>
         </ul>
       </div>
     </div>
@@ -475,19 +549,18 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
       <span class="kpi kpi-red">4 máquinas HTB + 1 CTF ao vivo</span>
       <span class="kpi kpi-ceic">Pentest I + Incidentes CEIC concluídos</span>
       <span class="kpi kpi-lab">BTJA concluído + 3 write-ups publicados</span>
-      <span class="kpi kpi-biz">Simulação de ataque à FC documentada para Eric</span>
+      <span class="kpi kpi-biz">Simulação de ataque à FC documentada</span>
       <span class="kpi kpi-qa">Security Test Cases no Jira</span>
     </div>
   </div>
 </details>
 
-<!-- T4 -->
 <details class="quarter" data-q="q4">
   <summary class="q-summary">
     <span class="q-tag t-q4">T4 · Jul/2026 – Out/2026</span>
     <div class="q-info">
       <div class="q-name">Criptografia + eJPT + portfólio consolidado</div>
-      <div class="q-sub">CEIC Cripto (Set/Out) · Esteganografia (Out/Nov) · eJPT · conversa de transição com Elton e Eric</div>
+      <div class="q-sub">CEIC Cripto (Set/Out) · Esteganografia (Out/Nov) · eJPT · conversa de transição</div>
     </div>
     <div class="q-progress-wrap">
       <div class="q-progress-bar"><div class="q-progress-fill" id="prog-q4"></div></div>
@@ -501,43 +574,43 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
         <div class="p-title">Red Team — eJPT + portfólio</div>
         <ul class="task-list">
           <li class="task-item" data-id="q4-r1"><div class="task-check"></div><span class="task-text">Concluir <a href="https://ine.com/learning/certifications/internal/elearnsecurity-junior-penetration-tester-cert" target="_blank">eJPT — eLearnSecurity Junior Penetration Tester ↗</a></span></li>
-          <li class="task-item" data-id="q4-r2"><div class="task-check"></div><span class="task-text"><a href="https://www.hackthebox.com/" target="_blank">HackTheBox ↗</a> — acumular 8 máquinas com write-ups (total do Plano 1)</span></li>
+          <li class="task-item" data-id="q4-r2"><div class="task-check"></div><span class="task-text"><a href="https://www.hackthebox.com/" target="_blank">HackTheBox ↗</a> — 8 máquinas acumuladas com write-ups</span></li>
           <li class="task-item" data-id="q4-r3"><div class="task-check"></div><span class="task-text">Participar de mais 1 CTF ao vivo — total de 2 no plano</span></li>
           <li class="task-item" data-id="q4-r4"><div class="task-check"></div><span class="task-text">Montar Cyber Hub no GitHub Pages consolidando portfólio completo</span></li>
         </ul>
       </div>
       <div class="pillar p-ceic">
-        <div class="p-title">CEIC — Criptografia + Esteganografia</div>
+        <div class="p-title">CEIC — Criptografia + Estenografia</div>
         <div class="ceic-tag">📚 CEIC Red Team<span class="ceic-date">26/Set + 24/Out 2026</span></div>
         <ul class="task-list">
-          <li class="task-item" data-id="q4-c1"><div class="task-check"></div><span class="task-text">Criptografia (26/Set–11/Out): simétrica, assimétrica, hashes, PKI — antecipar com <a href="https://cryptohack.org/" target="_blank">CryptoHack ↗</a></span></li>
-          <li class="task-item" data-id="q4-c2"><div class="task-check"></div><span class="task-text">Esteganografia (24/Out–08/Nov): ocultação em mídias, ferramentas de detecção</span></li>
-          <li class="task-item" data-id="q4-c3"><div class="task-check"></div><span class="task-text">Conectar criptografia com pentest: identificar protocolos fracos em análises de tráfego</span></li>
-          <li class="task-item" data-id="q4-c4"><div class="task-check"></div><span class="task-text">Avaliar <a href="https://www.comptia.org/certifications/security" target="_blank">CompTIA Security+ ↗</a> como próxima certificação (Plano 2)</span></li>
+          <li class="task-item" data-id="q4-c1"><div class="task-check"></div><span class="task-text">Criptografia (26/Set–11/Out): antecipar com <a href="https://cryptohack.org/" target="_blank">CryptoHack ↗</a></span></li>
+          <li class="task-item" data-id="q4-c2"><div class="task-check"></div><span class="task-text">Esteganografia (24/Out–08/Nov): ocultação em mídias, detecção</span></li>
+          <li class="task-item" data-id="q4-c3"><div class="task-check"></div><span class="task-text">Conectar criptografia com pentest: identificar protocolos fracos em tráfego</span></li>
+          <li class="task-item" data-id="q4-c4"><div class="task-check"></div><span class="task-text">Avaliar <a href="https://www.comptia.org/certifications/security" target="_blank">CompTIA Security+ ↗</a> (Plano 2)</span></li>
         </ul>
       </div>
       <div class="pillar p-lab">
         <div class="p-title">Labs + Forense Digital</div>
         <ul class="task-list">
           <li class="task-item" data-id="q4-l1"><div class="task-check"></div><span class="task-text">Forense Digital I (CEIC 21/Nov–06/Dez) — antecipar com <a href="https://tryhackme.com/module/digital-forensics-and-incident-response" target="_blank">TryHackMe DFIR ↗</a></span></li>
-          <li class="task-item" data-id="q4-l2"><div class="task-check"></div><span class="task-text">Publicar 1 artigo técnico no GitHub ou blog — tema conectado a lab real feito no plano</span></li>
+          <li class="task-item" data-id="q4-l2"><div class="task-check"></div><span class="task-text">Publicar 1 artigo técnico no GitHub sobre lab real do plano</span></li>
           <li class="task-item" data-id="q4-l3"><div class="task-check"></div><span class="task-text">Propor Bug Bounty interno ou pentest anual para a FC</span></li>
         </ul>
       </div>
       <div class="pillar p-biz">
-        <div class="p-title">Negócio & Impacto Sistêmico</div>
+        <div class="p-title">Negócio & Impacto</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q4-bz1"><div class="task-check"></div><span class="task-text">Elaborar threat model completo da aplicação FC com Eric — conectar arquitetura com superfície de ataque real</span></li>
-          <li class="task-item" data-id="q4-bz2"><div class="task-check"></div><span class="task-text">Apresentar ao Eric: "mapa de cobertura de segurança" — o que está coberto vs. o que fica exposto</span></li>
-          <li class="task-item" data-id="q4-bz3"><div class="task-check"></div><span class="task-text">Elaborar proposta de papel "Security Analyst" na FC com escopo, entregáveis e KPIs — para apresentar no T4</span></li>
+          <li class="task-item" data-id="q4-bz1"><div class="task-check"></div><span class="task-text">Threat model completo da FC com Eric — conectar arquitetura com superfície de ataque</span></li>
+          <li class="task-item" data-id="q4-bz2"><div class="task-check"></div><span class="task-text">Apresentar ao Eric: "mapa de cobertura" — o que está coberto vs. o que fica exposto</span></li>
+          <li class="task-item" data-id="q4-bz3"><div class="task-check"></div><span class="task-text">Elaborar proposta de papel "Security Analyst" na FC para apresentar à Larissa</span></li>
         </ul>
       </div>
       <div class="pillar p-qa">
         <div class="p-title">Transição planejada</div>
         <ul class="task-list">
-          <li class="task-item" data-id="q4-q1"><div class="task-check"></div><span class="task-text">Apresentação formal dos resultados do Plano 1 — Elton (QA craft + processo) e Eric (arquitetura + segurança)</span></li>
+          <li class="task-item" data-id="q4-q1"><div class="task-check"></div><span class="task-text">Apresentação formal dos resultados do Plano 1 — Larissa, Elton e Eric</span></li>
           <li class="task-item" data-id="q4-q2"><div class="task-check"></div><span class="task-text">Alinhar criação de papel "Security Analyst" na FC — sem o júnior</span></li>
-          <li class="task-item" data-id="q4-q3"><div class="task-check"></div><span class="task-text">Definir escopo e metas do Plano 2 em conjunto com Elton e Eric</span></li>
+          <li class="task-item" data-id="q4-q3"><div class="task-check"></div><span class="task-text">Definir escopo e metas do Plano 2 em conjunto com a liderança</span></li>
         </ul>
       </div>
     </div>
@@ -545,7 +618,7 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
       <span class="kpi kpi-red">eJPT concluído + 8 máquinas HTB</span>
       <span class="kpi kpi-ceic">Criptografia + Esteganografia concluídos</span>
       <span class="kpi kpi-lab">Artigo técnico publicado</span>
-      <span class="kpi kpi-biz">Threat model completo + proposta de papel entregue</span>
+      <span class="kpi kpi-biz">Threat model + proposta de papel à Larissa</span>
       <span class="kpi kpi-qa">Apresentação formal + Plano 2 definido</span>
     </div>
   </div>
@@ -589,32 +662,75 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
 <div class="sec-label">Jornada — visão 3 anos</div>
 <div class="roadmap">
   <div class="roadmap-label">Trajetória de carreira</div>
-  <div class="roadmap-sublabel">Plano 1 consolida a base. Meta: Security Analyst / Pentester na FC — sem o "Júnior".</div>
+  <div class="roadmap-sublabel">Plano 1 consolida a base. Meta: Security Analyst / Pentester na FC.</div>
   <div class="roadmap-track">
-    <span class="rs now">QA Júnior · FC</span>
-    <span class="rs-sep">→</span>
-    <span class="rs mid">QA Security / SDET</span>
-    <span class="rs-sep">→</span>
-    <span class="rs next">Security Analyst · FC</span>
-    <span class="rs-sep">→</span>
-    <span class="rs far">Pentester / Red Team · FC</span>
+    <span class="rs now">QA Júnior · FC</span><span class="rs-sep">→</span>
+    <span class="rs mid">QA Security / SDET</span><span class="rs-sep">→</span>
+    <span class="rs next">Security Analyst · FC</span><span class="rs-sep">→</span>
+    <span class="rs far">Pentester / Red Team</span>
   </div>
 </div>
 
-<!-- NOTAS -->
+<!-- PROJECTS -->
+<div class="projects-section">
+  <div class="sec-label">Projetos — em andamento e publicados</div>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-type">Cybersecurity · Lab</div>
+      <div class="project-name">OverTheWire Bandit Write-ups</div>
+      <p class="project-desc">Soluções dos níveis do Bandit — foco em Linux e lógica de segurança.</p>
+      <div class="project-stack"><span class="stack-tag">Linux</span><span class="stack-tag">Bash</span><span class="stack-tag">CTF</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Red Team · Lab</div>
+      <div class="project-name">HTB Starting Point</div>
+      <p class="project-desc">Primeiras máquinas do HackTheBox — reconhecimento e exploração básica.</p>
+      <div class="project-stack"><span class="stack-tag">HackTheBox</span><span class="stack-tag">Kali</span><span class="stack-tag">Nmap</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Pós-graduação · CEIC</div>
+      <div class="project-name">PDI Cybersecurity Pathway</div>
+      <p class="project-desc">Este PDI — HTML/CSS puro, hospedado no GitHub Pages com Supabase.</p>
+      <div class="project-stack"><span class="stack-tag">HTML</span><span class="stack-tag">Supabase</span><span class="stack-tag">GitHub Pages</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-type">QA · Automação</div>
+      <div class="project-name">Automações Playwright FC</div>
+      <p class="project-desc">Scripts para fluxos do SellerCenter e Anymarket usando Playwright JS.</p>
+      <div class="project-stack"><span class="stack-tag">Playwright</span><span class="stack-tag">JavaScript</span><span class="stack-tag">MCP</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTES -->
 <div class="notes-section">
-  <div class="sec-label">Anotações dos líderes</div>
+  <div class="sec-label">Anotações da liderança</div>
   <div class="notes-grid">
     <div class="note-block">
       <div class="note-header">
-        <div class="note-avatar el">EL</div>
+        <div class="note-avatar av-larissa">LA</div>
+        <div class="note-info">
+          <div class="note-name">Larissa</div>
+          <div class="note-role">Gerente · FC</div>
+          <div class="note-focus nf-larissa">Foco: direcionamento estratégico, pontos de melhoria, alinhamento de carreira</div>
+        </div>
+      </div>
+      <textarea class="note-area" id="note-larissa" placeholder="Pontos de melhoria, direcionamento estratégico, feedback de carreira…"></textarea>
+      <div class="note-footer">
+        <button class="note-save-btn" onclick="saveNote('larissa')">Salvar nota</button>
+        <span class="note-saved-msg" id="saved-larissa">Salvo ✓</span>
+      </div>
+    </div>
+    <div class="note-block">
+      <div class="note-header">
+        <div class="note-avatar av-elton">EL</div>
         <div class="note-info">
           <div class="note-name">Elton</div>
           <div class="note-role">QA Sênior · FC</div>
-          <div class="note-focus el">Foco: craft de QA, qualidade de processo, evolução técnica e maturidade dos testes</div>
+          <div class="note-focus nf-elton">Foco: craft de QA, qualidade de processo, evolução técnica de testes</div>
         </div>
       </div>
-      <textarea class="note-area" id="note-elton" placeholder="Como está evoluindo o craft de QA? Qualidade dos casos de teste, análise de impacto antes de testar, autonomia técnica no Playwright…"></textarea>
+      <textarea class="note-area" id="note-elton" placeholder="Como está evoluindo o craft? Qualidade dos testes, autonomia técnica, segurança no QA…"></textarea>
       <div class="note-footer">
         <button class="note-save-btn" onclick="saveNote('elton')">Salvar nota</button>
         <span class="note-saved-msg" id="saved-elton">Salvo ✓</span>
@@ -622,14 +738,14 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
     </div>
     <div class="note-block">
       <div class="note-header">
-        <div class="note-avatar er">ER</div>
+        <div class="note-avatar av-eric">ER</div>
         <div class="note-info">
           <div class="note-name">Eric</div>
           <div class="note-role">Arquiteto · FC</div>
-          <div class="note-focus er">Foco: impacto arquitetural, performance, segurança sistêmica, threat modeling</div>
+          <div class="note-focus nf-eric">Foco: impacto arquitetural, performance, segurança sistêmica, threat modeling</div>
         </div>
       </div>
-      <textarea class="note-area" id="note-eric" placeholder="O QA está entendendo o impacto arquitetural das mudanças? Threat model, performance, segurança sistêmica, integração SellerCenter/Anymarket…"></textarea>
+      <textarea class="note-area" id="note-eric" placeholder="O QA está entendendo o impacto arquitetural? Threat model, performance, integrações…"></textarea>
       <div class="note-footer">
         <button class="note-save-btn" onclick="saveNote('eric')">Salvar nota</button>
         <span class="note-saved-msg" id="saved-eric">Salvo ✓</span>
@@ -644,55 +760,103 @@ footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display
 </footer>
 
 </div>
+
 <script>
-const STORE='pdi-cyber-v3';
-function getState(){try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch{return{}}}
-function setState(s){localStorage.setItem(STORE,JSON.stringify(s))}
-function updateProgress(qId){
-  const items=document.querySelectorAll(`[data-id^="${qId}-"]`);
-  const done=[...items].filter(i=>i.classList.contains('done')).length;
-  const pct=items.length?Math.round(done/items.length*100):0;
-  const fill=document.getElementById('prog-'+qId);
-  const label=document.getElementById('pct-'+qId);
-  if(fill)fill.style.width=pct+'%';
-  if(label)label.textContent=pct+'%';
+const SUPABASE_URL = 'https://cusjxplmmscgtejyfrtz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1c2p4cGxtbXNjZ3RlanlmcnR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2Mjk1MjUsImV4cCI6MjA5NzIwNTUyNX0.vJs8xJ4a03n_9kH3LxuzbBxb8mXHNGl3Mid45ImvJBU';
+const PAGE_ID = 'cyber';
+let sb = null;
+try {
+  if (SUPABASE_URL !== 'https://cusjxplmmscgtejyfrtz.supabase.co') {
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    loadNotes();
+  }
+} catch(e) { console.warn('Supabase não configurado — usando localStorage.'); }
+
+async function saveNote(author) {
+  const content = document.getElementById('note-' + author).value;
+  const msg = document.getElementById('saved-' + author);
+  if (sb) {
+    await sb.from('pdi_notes').upsert(
+      { page: PAGE_ID, author, content, updated_at: new Date().toISOString() },
+      { onConflict: 'page,author' }
+    );
+  } else {
+    const s = JSON.parse(localStorage.getItem('pdi-cyber-v3') || '{}');
+    s['note-' + author] = content;
+    localStorage.setItem('pdi-cyber-v3', JSON.stringify(s));
+  }
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2000);
 }
-function initTasks(){
-  const state=getState();
-  document.querySelectorAll('.task-item').forEach(item=>{
-    const id=item.dataset.id;
-    if(state[id]){item.classList.add('done');item.querySelector('.task-check').textContent='✓';}
-    item.addEventListener('click',()=>{
-      const isDone=item.classList.toggle('done');
-      item.querySelector('.task-check').textContent=isDone?'✓':'';
-      const s=getState();s[id]=isDone;setState(s);
+
+async function loadNotes() {
+  if (sb) {
+    const { data } = await sb.from('pdi_notes').select('author,content').eq('page', PAGE_ID);
+    if (data) data.forEach(row => {
+      const el = document.getElementById('note-' + row.author);
+      if (el) el.value = row.content || '';
+    });
+  } else {
+    const s = JSON.parse(localStorage.getItem('pdi-cyber-v3') || '{}');
+    ['larissa','elton','eric'].forEach(a => {
+      const el = document.getElementById('note-' + a);
+      if (el && s['note-' + a]) el.value = s['note-' + a];
+    });
+  }
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('pdi-theme', isDark ? 'light' : 'dark');
+}
+const savedTheme = localStorage.getItem('pdi-theme');
+if (savedTheme) {
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
+}
+
+const TASK_STORE = 'pdi-cyber-tasks-v3';
+function getTaskState() { try { return JSON.parse(localStorage.getItem(TASK_STORE) || '{}'); } catch { return {}; } }
+function setTaskState(s) { localStorage.setItem(TASK_STORE, JSON.stringify(s)); }
+function updateProgress(qId) {
+  const items = document.querySelectorAll(`[data-id^="${qId}-"]`);
+  const done = [...items].filter(i => i.classList.contains('done')).length;
+  const pct = items.length ? Math.round(done / items.length * 100) : 0;
+  const fill = document.getElementById('prog-' + qId);
+  const label = document.getElementById('pct-' + qId);
+  if (fill) fill.style.width = pct + '%';
+  if (label) label.textContent = pct + '%';
+}
+function initTasks() {
+  const state = getTaskState();
+  document.querySelectorAll('.task-item').forEach(item => {
+    const id = item.dataset.id;
+    if (state[id]) { item.classList.add('done'); item.querySelector('.task-check').textContent = '✓'; }
+    item.addEventListener('click', () => {
+      const isDone = item.classList.toggle('done');
+      item.querySelector('.task-check').textContent = isDone ? '✓' : '';
+      const s = getTaskState(); s[id] = isDone; setTaskState(s);
       updateProgress(id.split('-')[0]);
     });
   });
   ['q1','q2','q3','q4'].forEach(updateProgress);
 }
-function saveNote(who){
-  const val=document.getElementById('note-'+who).value;
-  const s=getState();s['note-'+who]=val;setState(s);
-  const msg=document.getElementById('saved-'+who);
-  msg.classList.add('show');setTimeout(()=>msg.classList.remove('show'),2000);
-}
-function loadNotes(){
-  const s=getState();
-  ['elton','eric'].forEach(who=>{
-    const el=document.getElementById('note-'+who);
-    if(el&&s['note-'+who])el.value=s['note-'+who];
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), i * 80); obs.unobserve(e.target); }
   });
+}, { threshold: 0.04 });
+document.querySelectorAll('.quarter').forEach(q => obs.observe(q));
+const big = document.querySelector('.hero-big');
+if (big) {
+  big.addEventListener('mouseenter', () => big.style.color = 'var(--wine-bright)');
+  big.addEventListener('mouseleave', () => big.style.color = 'var(--line-2)');
 }
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach((e,i)=>{
-    if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*80);obs.unobserve(e.target);}
-  });
-},{threshold:0.04});
-document.querySelectorAll('.quarter').forEach(q=>obs.observe(q));
-const big=document.querySelector('.hero-big');
-if(big){big.addEventListener('mouseenter',()=>big.style.color='var(--wine-bright)');big.addEventListener('mouseleave',()=>big.style.color='var(--line-2)');}
-initTasks();loadNotes();
+initTasks();
 </script>
 </body>
 </html>
