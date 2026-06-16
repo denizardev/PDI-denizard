@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDI · Denizard · FC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --base:#0D0A0B;
+  --surface:#141010;
+  --surface-2:#1C1618;
+  --ink:#EDE8DF;
+  --ink-2:#B8B0A6;
+  --ink-3:#6E6660;
+  --line:#2A2022;
+  --line-2:#362830;
+  --wine:#8B1A3A;
+  --wine-dim:rgba(139,26,58,0.12);
+  --wine-mid:rgba(139,26,58,0.28);
+  --wine-bright:#A8224A;
+  --amber:#C4853A;
+  --amber-dim:rgba(196,133,58,0.10);
+  --amber-mid:rgba(196,133,58,0.22);
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth;height:100%}
+body{
+  background:var(--base);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-weight:300;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:40px 24px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* subtle dot grid */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:radial-gradient(circle,rgba(139,26,58,0.07) 1px,transparent 1px);
+  background-size:36px 36px;
+  pointer-events:none;z-index:0;
+}
+
+.wrap{
+  position:relative;z-index:1;
+  width:100%;max-width:600px;
+  text-align:center;
+}
+
+/* EYEBROW */
+.eyebrow{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--wine-bright);
+  margin-bottom:20px;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  opacity:0;animation:fadeUp 0.5s var(--ease) 0.1s forwards;
+}
+.eyebrow::before,.eyebrow::after{content:'';width:20px;height:1px;background:var(--wine-bright)}
+
+/* TITLE */
+.title{
+  font-family:var(--font-display);
+  font-size:clamp(48px,10vw,88px);
+  font-weight:300;
+  line-height:0.95;
+  letter-spacing:-0.02em;
+  margin-bottom:12px;
+  opacity:0;animation:fadeUp 0.6s var(--ease) 0.2s forwards;
+}
+.title em{font-style:italic;color:var(--wine-bright)}
+
+/* SUBTITLE */
+.subtitle{
+  font-family:var(--font-mono);font-size:12px;
+  color:var(--ink-3);letter-spacing:0.06em;
+  margin-bottom:8px;
+  opacity:0;animation:fadeUp 0.6s var(--ease) 0.28s forwards;
+}
+
+/* PLAN BADGE */
+.plan-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;
+  color:var(--wine-bright);
+  background:var(--wine-dim);border:1px solid var(--wine-mid);
+  padding:5px 14px;border-radius:2px;
+  margin-bottom:48px;
+  opacity:0;animation:fadeUp 0.6s var(--ease) 0.34s forwards;
+}
+.pulse{width:5px;height:5px;border-radius:50%;background:var(--wine-bright);animation:blink 1.8s ease-in-out infinite}
+
+/* DIVIDER */
+.divider{
+  width:40px;height:1px;background:var(--line-2);
+  margin:0 auto 40px;
+  opacity:0;animation:fadeUp 0.5s var(--ease) 0.38s forwards;
+}
+
+/* CARDS */
+.cards{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin-bottom:40px;
+}
+
+.card{
+  display:block;
+  background:var(--surface);
+  border:1px solid var(--line-2);
+  border-radius:4px;
+  padding:28px 24px;
+  text-decoration:none;
+  text-align:left;
+  transition:border-color 0.2s var(--ease),background 0.2s var(--ease),transform 0.2s var(--ease);
+  opacity:0;
+  cursor:pointer;
+}
+.card:nth-child(1){animation:fadeUp 0.55s var(--ease) 0.45s forwards}
+.card:nth-child(2){animation:fadeUp 0.55s var(--ease) 0.52s forwards}
+
+.card:hover{
+  background:var(--surface-2);
+  transform:translateY(-2px);
+}
+.card.qa:hover{border-color:var(--wine)}
+.card.cyber:hover{border-color:var(--amber)}
+
+.card-tag{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;
+  text-transform:uppercase;padding:3px 9px;border-radius:2px;
+  display:inline-block;margin-bottom:16px;
+}
+.card.qa   .card-tag{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
+.card.cyber .card-tag{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
+
+.card-title{
+  font-family:var(--font-display);
+  font-size:22px;font-weight:300;
+  line-height:1.1;letter-spacing:-0.01em;
+  margin-bottom:10px;color:var(--ink);
+}
+.card.qa   .card-title em{font-style:italic;color:var(--wine-bright)}
+.card.cyber .card-title em{font-style:normal;color:var(--amber)}
+
+.card-desc{
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--ink-3);line-height:1.6;
+  margin-bottom:20px;
+}
+
+.card-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:20px}
+.pill{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:0.04em;
+  padding:3px 8px;border-radius:1px;
+  background:var(--surface-2);color:var(--ink-3);
+  border:1px solid var(--line-2);
+}
+
+.card-arrow{
+  font-family:var(--font-mono);font-size:11px;
+  display:flex;align-items:center;gap:6px;
+  transition:gap 0.2s var(--ease);
+}
+.card.qa   .card-arrow{color:var(--wine-bright)}
+.card.cyber .card-arrow{color:var(--amber)}
+.card:hover .card-arrow{gap:10px}
+
+/* META */
+.meta{
+  display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;gap:16px;
+  padding-top:28px;
+  border-top:1px solid var(--line);
+  opacity:0;animation:fadeUp 0.5s var(--ease) 0.6s forwards;
+}
+.meta-item{
+  display:flex;align-items:center;gap:7px;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:0.06em;color:var(--ink-3);
+}
+.meta-dot{width:6px;height:6px;border-radius:50%}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+
+/* RESPONSIVE */
+@media(max-width:500px){
+  .cards{grid-template-columns:1fr}
+  .card-title{font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Plano de Desenvolvimento Individual</div>
+
+  <h1 class="title">PDI<br><em>Denizard</em></h1>
+
+  <p class="subtitle">Ferreira Costa · Plano 1 de 3 · Out/2025 → Out/2026</p>
+
+  <div class="plan-badge">
+    <span class="pulse"></span>
+    Ativo · v3.0 · 12 meses
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="cards">
+
+    <a class="card qa" href="pdi-qa.html">
+      <span class="card-tag">QA-focused</span>
+      <div class="card-title">QA com visão de<br><em>segurança</em></div>
+      <p class="card-desc">Playwright, k6, skills/agentes, regras de negócio e impacto sistêmico. Para Elton e Eric acompanharem o craft e a evolução técnica.</p>
+      <div class="card-pills">
+        <span class="pill">Playwright</span>
+        <span class="pill">k6</span>
+        <span class="pill">Skills & Agentes</span>
+        <span class="pill">SellerCenter</span>
+        <span class="pill">Anymarket</span>
+      </div>
+      <div class="card-arrow">Abrir PDI QA →</div>
+    </a>
+
+    <a class="card cyber" href="pdi-cyber.html">
+      <span class="card-tag">Cybersecurity-focused</span>
+      <div class="card-title">CYBER<br><em>SECURITY</em><br>PATHWAY</div>
+      <p class="card-desc">Ementa Red Team CEIC/UFPE, labs práticos externos e trilha de certificações. Trajetória de 3 anos rumo ao Pentester.</p>
+      <div class="card-pills">
+        <span class="pill">CEIC Red Team</span>
+        <span class="pill">HackTheBox</span>
+        <span class="pill">eJPT</span>
+        <span class="pill">CTFs</span>
+        <span class="pill">Bandit</span>
+      </div>
+      <div class="card-arrow">Abrir PDI Cyber →</div>
+    </a>
+
+  </div>
+
+  <div class="meta">
+    <div class="meta-item">
+      <div class="meta-dot" style="background:var(--wine-bright)"></div>
+      Elton · QA Sênior
+    </div>
+    <div class="meta-item">
+      <div class="meta-dot" style="background:var(--amber)"></div>
+      Eric · Arquiteto
+    </div>
+    <div class="meta-item">
+      <div class="meta-dot" style="background:var(--ink-3)"></div>
+      GitHub Pages · sempre atualizado
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
