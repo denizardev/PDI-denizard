@@ -232,9 +232,34 @@ footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-co
 }
 @media(max-width:480px){.pillars{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+
+/* LOCK SCREEN */
+.lock-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
+.lock-box{background:var(--surface);border:1px solid var(--line-2);border-radius:4px;padding:40px 36px;width:100%;max-width:360px;text-align:center}
+.lock-icon{font-size:32px;margin-bottom:16px}
+.lock-title{font-family:"DM Mono",monospace;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.lock-sub{font-size:13px;color:var(--ink-2);margin-bottom:24px}
+.lock-input{width:100%;background:var(--bg);border:1px solid var(--line-2);border-radius:2px;padding:10px 14px;font-family:"DM Mono",monospace;font-size:14px;color:var(--ink);outline:none;text-align:center;letter-spacing:0.08em;transition:border-color 0.2s;margin-bottom:12px}
+.lock-input:focus{border-color:var(--wine)}
+.lock-input.error{border-color:var(--wine-bright);animation:shake 0.3s ease}
+.lock-btn{width:100%;padding:10px;background:var(--wine-dim);border:1px solid var(--wine-mid);border-radius:2px;font-family:"DM Mono",monospace;font-size:11px;letter-spacing:0.08em;color:var(--wine-bright);cursor:pointer;transition:all 0.2s}
+.lock-btn:hover{background:var(--wine);color:var(--bg)}
+.lock-error{font-family:"DM Mono",monospace;font-size:11px;color:var(--wine-bright);margin-top:8px;opacity:0;transition:opacity 0.2s}
+.lock-error.show{opacity:1}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 </style>
 </head>
 <body>
+<div class="lock-overlay" id="lockOverlay">
+  <div class="lock-box">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">Acesso restrito</div>
+    <div class="lock-sub">PDI · Denizard · FC</div>
+    <input class="lock-input" type="password" id="lockInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPass()">
+    <button class="lock-btn" onclick="checkPass()">Entrar</button>
+    <div class="lock-error" id="lockError">Senha incorreta</div>
+  </div>
+</div>
 <div class="page">
 
 <!-- TOP NAV -->
@@ -250,7 +275,7 @@ footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-co
 <header class="hero">
   <div class="hero-left">
     <div class="hero-eyebrow">PDI — Plano de Desenvolvimento Individual</div>
-    <div class="hero-plan-badge">Plano 1 de 3 · 12 meses · Out/2025 → Out/2026</div>
+    <div class="hero-plan-badge">Plano 1 de 3 · 12 meses · Jun/2026 → Dez/2026</div>
     <h1>QA com<br>visão de<br><em>segurança</em></h1>
     <p class="hero-desc">Evolução técnica no contexto real da FC — Playwright, k6, skills/agentes, regras de negócio, SellerCenter e Anymarket — com segurança como diferencial.</p>
     <div class="hero-chips">
@@ -260,12 +285,6 @@ footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-co
       <span class="chip">Playwright + k6 + Skills</span>
     </div>
   </div>
-  <div class="hero-aside">
-    <div class="hero-big">12</div>
-    <div class="hero-big-sub">meses · plano 1</div>
-    <div class="hero-plan-track">
-      <div class="plan-dot active"></div><div class="plan-dot"></div><div class="plan-dot"></div>
-    </div>
   </div>
 </header>
 
@@ -342,7 +361,7 @@ footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-co
 
 <details class="quarter" data-q="q1" open>
   <summary class="q-summary">
-    <span class="q-tag t-q1">T1 · Out/2025 – Jan/2026</span>
+    <span class="q-tag t-q1">T1 · Jun/2026 – Jul/2026</span>
     <div class="q-info">
       <div class="q-name">Base real — skills críticas, k6 do zero, negócio aplicado</div>
       <div class="q-sub">Você já gera planos com agentes — meta: criticidade e entendimento de impacto</div>
@@ -418,7 +437,7 @@ footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-co
 
 <details class="quarter" data-q="q2">
   <summary class="q-summary">
-    <span class="q-tag t-q2">T2 · Jan/2026 – Abr/2026</span>
+    <span class="q-tag t-q2">T2 · Ago/2026 – Set/2026</span>
     <div class="q-info">
       <div class="q-name">Visibilidade no time + k6 load test + impacto de novos frameworks</div>
       <div class="q-sub">Referência técnica emergindo — entender quando uma mudança muda o que precisa ser testado</div>
@@ -492,7 +511,7 @@ footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-co
 
 <details class="quarter" data-q="q3">
   <summary class="q-summary">
-    <span class="q-tag t-q3">T3 · Abr/2026 – Jul/2026</span>
+    <span class="q-tag t-q3">T3 · Out/2026 – Nov/2026</span>
     <div class="q-info">
       <div class="q-name">k6 no CI + Security Test Cases + impacto sistêmico</div>
       <div class="q-sub">Pipeline de qualidade automatizado — você pensa antes de testar, não só durante</div>
@@ -559,7 +578,7 @@ footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-co
 
 <details class="quarter" data-q="q4">
   <summary class="q-summary">
-    <span class="q-tag t-q4">T4 · Jul/2026 – Out/2026</span>
+    <span class="q-tag t-q4">T4 · Dez/2026</span>
     <div class="q-info">
       <div class="q-name">Ownership + playbook + posicionamento para Plano 2</div>
       <div class="q-sub">Referência técnica consolidada — apresentação formal ao Larissa, Elton e Eric</div>
@@ -722,7 +741,7 @@ footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-co
 </div>
 
 <footer>
-  <span>Denizard · PDI QA-focused · Plano 1/3 · FC · Out/2025–Out/2026</span>
+  <span>Denizard · PDI QA-focused · Plano 1/3 · FC · Jun/2026–Dez/2026</span>
   <span>pdi-qa.html · GitHub Pages</span>
 </footer>
 
@@ -843,5 +862,32 @@ if (big) {
 
 initTasks();
 </script>
+<script>const PDI_PASS="pdi@fc2026";
+const PASS_KEY="pdi-access-v1";
+function checkPass(){
+  const v=document.getElementById("lockInput").value;
+  if(v===PDI_PASS){
+    sessionStorage.setItem(PASS_KEY,"1");
+    const o=document.getElementById("lockOverlay");
+    o.style.opacity="0";o.style.transition="opacity 0.3s";
+    setTimeout(()=>o.remove(),300);
+  } else {
+    const i=document.getElementById("lockInput");
+    const e=document.getElementById("lockError");
+    i.classList.add("error");e.classList.add("show");
+    setTimeout(()=>{i.classList.remove("error");i.value="";},400);
+  }
+}
+if(sessionStorage.getItem(PASS_KEY)!=="1"){
+  document.addEventListener("DOMContentLoaded",()=>{
+    const o=document.getElementById("lockOverlay");
+    if(o){o.style.display="flex";}
+  });
+} else {
+  document.addEventListener("DOMContentLoaded",()=>{
+    const o=document.getElementById("lockOverlay");
+    if(o) o.remove();
+  });
+}</script>
 </body>
 </html>

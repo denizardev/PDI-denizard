@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1:1 · Denizard · FC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root[data-theme="dark"]{
+  --bg:#0D0A0B;--surface:#141010;--surface-2:#1C1618;--surface-3:#231C1E;
+  --ink:#EDE8DF;--ink-2:#B8B0A6;--ink-3:#6E6660;
+  --line:#2A2022;--line-2:#362830;
+  --wine:#8B1A3A;--wine-dim:rgba(139,26,58,0.12);--wine-mid:rgba(139,26,58,0.28);--wine-bright:#A8224A;
+  --amber:#C4853A;--amber-dim:rgba(196,133,58,0.10);--amber-mid:rgba(196,133,58,0.22);
+  --lavender:#9B59B6;--lavender-dim:rgba(155,89,182,0.12);--lavender-mid:rgba(155,89,182,0.28);--lavender-bright:#B06DD4;
+}
+:root[data-theme="light"]{
+  --bg:#F7F4EF;--surface:#EEEAE2;--surface-2:#E5E0D6;--surface-3:#DDD8CE;
+  --ink:#1A1614;--ink-2:#4A4440;--ink-3:#8A8480;
+  --line:#D8D2C8;--line-2:#C8C0B4;
+  --wine:#8B1A3A;--wine-dim:rgba(139,26,58,0.07);--wine-mid:rgba(139,26,58,0.2);--wine-bright:#7A1633;
+  --amber:#A06820;--amber-dim:rgba(160,104,32,0.08);--amber-mid:rgba(160,104,32,0.2);
+  --lavender:#7B3A9E;--lavender-dim:rgba(123,58,158,0.08);--lavender-mid:rgba(123,58,158,0.2);--lavender-bright:#7B3A9E;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6;font-weight:300;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+.page{max-width:860px;margin:0 auto;padding:0 28px 100px}
+
+/* TOP NAV */
+.topnav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:14px 0;background:var(--bg);border-bottom:1px solid var(--line);transition:background 0.3s;margin-bottom:8px}
+.back-btn{display:inline-flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--ink-3);text-decoration:none;padding:6px 12px;border:1px solid var(--line-2);border-radius:2px;transition:all 0.2s}
+.back-btn:hover{border-color:var(--lavender);color:var(--lavender-bright);background:var(--lavender-dim)}
+.topnav-right{display:flex;align-items:center;gap:8px}
+.theme-toggle{width:34px;height:34px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line-2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s}
+.theme-toggle:hover{border-color:var(--lavender)}
+.page-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-3)}
+
+/* HERO */
+.hero{padding:48px 0 40px;border-bottom:1px solid var(--line);margin-bottom:48px}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--lavender-bright);margin-bottom:10px;display:flex;align-items:center;gap:10px;opacity:0;animation:fadeUp 0.5s ease 0.1s forwards}
+.hero-eyebrow::before{content:'';width:20px;height:1px;background:var(--lavender-bright)}
+.hero h1{font-family:'Fraunces',Georgia,serif;font-size:clamp(36px,5vw,56px);font-weight:300;line-height:1.0;letter-spacing:-0.02em;margin-bottom:12px;opacity:0;animation:fadeUp 0.6s ease 0.18s forwards}
+.hero h1 em{font-style:italic;color:var(--lavender-bright)}
+.hero-desc{font-size:13.5px;color:var(--ink-2);max-width:520px;line-height:1.75;opacity:0;animation:fadeUp 0.6s ease 0.26s forwards}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:32px;opacity:0;animation:fadeUp 0.5s ease 0.32s forwards}
+.tab-btn{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;padding:12px 20px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--ink-3);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px;margin-bottom:-1px}
+.tab-btn:hover{color:var(--ink-2)}
+.tab-btn.active{color:var(--lavender-bright);border-bottom-color:var(--lavender-bright)}
+.tab-avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:500}
+.av-la{background:var(--lavender-dim);border:1px solid var(--lavender-mid);color:var(--lavender-bright)}
+.av-el{background:var(--wine-dim);border:1px solid var(--wine-mid);color:var(--wine-bright)}
+.av-er{background:var(--amber-dim);border:1px solid var(--amber-mid);color:var(--amber)}
+
+/* TAB CONTENT */
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* PERSON HEADER */
+.person-header{display:flex;align-items:flex-start;gap:16px;padding:20px;background:var(--surface);border:1px solid var(--line-2);border-radius:3px;margin-bottom:24px}
+.person-avatar-lg{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;flex-shrink:0}
+.pal-la{background:var(--lavender-dim);border:1px solid var(--lavender-mid);color:var(--lavender-bright)}
+.pal-el{background:var(--wine-dim);border:1px solid var(--wine-mid);color:var(--wine-bright)}
+.pal-er{background:var(--amber-dim);border:1px solid var(--amber-mid);color:var(--amber)}
+.person-info .person-name{font-size:17px;font-weight:500;margin-bottom:3px}
+.person-info .person-role{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink-3);margin-bottom:6px}
+.person-info .person-focus{font-size:13px;color:var(--ink-2);line-height:1.55}
+
+/* SEC LABEL */
+.sec-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* NEW ENTRY FORM */
+.new-entry-form{background:var(--surface);border:1px solid var(--line-2);border-radius:3px;padding:20px;margin-bottom:28px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3)}
+.form-input{background:var(--bg);border:1px solid var(--line-2);border-radius:2px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color 0.2s}
+.form-input:focus{border-color:var(--lavender)}
+.form-textarea{background:var(--bg);border:1px solid var(--line-2);border-radius:2px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;resize:vertical;min-height:100px;line-height:1.6;width:100%;transition:border-color 0.2s;margin-bottom:12px}
+.form-textarea:focus{border-color:var(--lavender)}
+.form-textarea::placeholder,.form-input::placeholder{color:var(--ink-3)}
+.form-footer{display:flex;justify-content:space-between;align-items:center}
+.save-btn{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.06em;padding:8px 18px;border:1px solid var(--lavender);border-radius:2px;background:var(--lavender-dim);color:var(--lavender-bright);cursor:pointer;transition:all 0.2s}
+.save-btn:hover{background:var(--lavender);color:var(--bg)}
+.saved-msg{font-family:'DM Mono',monospace;font-size:10px;color:var(--lavender-bright);opacity:0;transition:opacity 0.3s}
+.saved-msg.show{opacity:1}
+
+/* ENTRIES LIST */
+.entries-list{display:flex;flex-direction:column;gap:10px}
+.entry-card{background:var(--surface);border:1px solid var(--line-2);border-radius:3px;padding:18px;transition:border-color 0.2s}
+.entry-card:hover{border-color:var(--line)}
+.entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.entry-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-3)}
+.entry-type-badge{font-family:'DM Mono',monospace;font-size:9px;padding:2px 8px;border-radius:1px;letter-spacing:0.06em}
+.badge-la{background:var(--lavender-dim);color:var(--lavender-bright);border:1px solid var(--lavender-mid)}
+.badge-el{background:var(--wine-dim);color:var(--wine-bright);border:1px solid var(--wine-mid)}
+.badge-er{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber-mid)}
+.entry-title{font-size:14px;font-weight:500;margin-bottom:6px}
+.entry-content{font-size:13px;color:var(--ink-2);line-height:1.6;white-space:pre-wrap}
+.entry-actions{display:flex;justify-content:flex-end;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.delete-btn{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-3);background:transparent;border:none;cursor:pointer;transition:color 0.2s}
+.delete-btn:hover{color:var(--wine-bright)}
+.empty-state{text-align:center;padding:40px;font-family:'DM Mono',monospace;font-size:12px;color:var(--ink-3);border:1px dashed var(--line-2);border-radius:3px}
+
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-3)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+
+/* LOCK SCREEN */
+.lock-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
+.lock-box{background:var(--surface);border:1px solid var(--line-2);border-radius:4px;padding:40px 36px;width:100%;max-width:360px;text-align:center}
+.lock-icon{font-size:32px;margin-bottom:16px}
+.lock-title{font-family:"DM Mono",monospace;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.lock-sub{font-size:13px;color:var(--ink-2);margin-bottom:24px}
+.lock-input{width:100%;background:var(--bg);border:1px solid var(--line-2);border-radius:2px;padding:10px 14px;font-family:"DM Mono",monospace;font-size:14px;color:var(--ink);outline:none;text-align:center;letter-spacing:0.08em;transition:border-color 0.2s;margin-bottom:12px}
+.lock-input:focus{border-color:var(--wine)}
+.lock-input.error{border-color:var(--wine-bright);animation:shake 0.3s ease}
+.lock-btn{width:100%;padding:10px;background:var(--wine-dim);border:1px solid var(--wine-mid);border-radius:2px;font-family:"DM Mono",monospace;font-size:11px;letter-spacing:0.08em;color:var(--wine-bright);cursor:pointer;transition:all 0.2s}
+.lock-btn:hover{background:var(--wine);color:var(--bg)}
+.lock-error{font-family:"DM Mono",monospace;font-size:11px;color:var(--wine-bright);margin-top:8px;opacity:0;transition:opacity 0.2s}
+.lock-error.show{opacity:1}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+</style>
+</head>
+<body>
+<div class="lock-overlay" id="lockOverlay">
+  <div class="lock-box">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">Acesso restrito</div>
+    <div class="lock-sub">PDI · Denizard · FC</div>
+    <input class="lock-input" type="password" id="lockInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPass()">
+    <button class="lock-btn" onclick="checkPass()">Entrar</button>
+    <div class="lock-error" id="lockError">Senha incorreta</div>
+  </div>
+</div>
+<div class="page">
+
+<nav class="topnav">
+  <a class="back-btn" href="index.html">← Voltar ao início</a>
+  <div class="topnav-right">
+    <span class="page-label">1:1 — Anotações</span>
+    <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-eyebrow">Reuniões individuais — 1:1</div>
+  <h1>Anotações com<br>a <em>liderança</em></h1>
+  <p class="hero-desc">Registro de feedbacks, direcionamentos e pontos de melhoria das reuniões 1:1 com Larissa, Elton e Eric.</p>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('larissa')">
+    <span class="tab-avatar av-la">LA</span>Larissa
+  </button>
+  <button class="tab-btn" onclick="switchTab('elton')">
+    <span class="tab-avatar av-el">EL</span>Elton
+  </button>
+  <button class="tab-btn" onclick="switchTab('eric')">
+    <span class="tab-avatar av-er">ER</span>Eric
+  </button>
+</div>
+
+<!-- LARISSA -->
+<div class="tab-content active" id="tab-larissa">
+  <div class="person-header">
+    <div class="person-avatar-lg pal-la">LA</div>
+    <div class="person-info">
+      <div class="person-name">Larissa</div>
+      <div class="person-role">Líder · FC</div>
+      <div class="person-focus">Direcionamento estratégico, alinhamento de carreira, pontos de melhoria e visão geral do seu desenvolvimento.</div>
+    </div>
+  </div>
+  <div class="sec-label">Nova anotação</div>
+  <div class="new-entry-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Data da reunião</label>
+        <input class="form-input" type="date" id="date-larissa">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tema / título</label>
+        <input class="form-input" type="text" id="title-larissa" placeholder="ex: Feedback Q1, Alinhamento de carreira…">
+      </div>
+    </div>
+    <label class="form-label" style="display:block;margin-bottom:6px">Anotações</label>
+    <textarea class="form-textarea" id="content-larissa" placeholder="Pontos discutidos, feedbacks recebidos, ações combinadas, próximos passos…"></textarea>
+    <div class="form-footer">
+      <button class="save-btn" onclick="saveEntry('larissa')">Salvar anotação</button>
+      <span class="saved-msg" id="saved-larissa">Salvo ✓</span>
+    </div>
+  </div>
+  <div class="sec-label">Histórico</div>
+  <div class="entries-list" id="entries-larissa"><div class="empty-state">Nenhuma anotação ainda — adicione a primeira acima.</div></div>
+</div>
+
+<!-- ELTON -->
+<div class="tab-content" id="tab-elton">
+  <div class="person-header">
+    <div class="person-avatar-lg pal-el">EL</div>
+    <div class="person-info">
+      <div class="person-name">Elton</div>
+      <div class="person-role">QA Sênior · FC</div>
+      <div class="person-focus">Craft de QA, qualidade de processo, evolução técnica de testes e autonomia no Playwright.</div>
+    </div>
+  </div>
+  <div class="sec-label">Nova anotação</div>
+  <div class="new-entry-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Data da reunião</label>
+        <input class="form-input" type="date" id="date-elton">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tema / título</label>
+        <input class="form-input" type="text" id="title-elton" placeholder="ex: Review de testes, Feedback de sprint…">
+      </div>
+    </div>
+    <label class="form-label" style="display:block;margin-bottom:6px">Anotações</label>
+    <textarea class="form-textarea" id="content-elton" placeholder="Pontos discutidos, feedbacks recebidos, ações combinadas, próximos passos…"></textarea>
+    <div class="form-footer">
+      <button class="save-btn" onclick="saveEntry('elton')">Salvar anotação</button>
+      <span class="saved-msg" id="saved-elton">Salvo ✓</span>
+    </div>
+  </div>
+  <div class="sec-label">Histórico</div>
+  <div class="entries-list" id="entries-elton"><div class="empty-state">Nenhuma anotação ainda — adicione a primeira acima.</div></div>
+</div>
+
+<!-- ERIC -->
+<div class="tab-content" id="tab-eric">
+  <div class="person-header">
+    <div class="person-avatar-lg pal-er">ER</div>
+    <div class="person-info">
+      <div class="person-name">Eric</div>
+      <div class="person-role">Arquiteto · FC</div>
+      <div class="person-focus">Impacto arquitetural, performance, segurança sistêmica, threat modeling e visão técnica de longo prazo.</div>
+    </div>
+  </div>
+  <div class="sec-label">Nova anotação</div>
+  <div class="new-entry-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Data da reunião</label>
+        <input class="form-input" type="date" id="date-eric">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tema / título</label>
+        <input class="form-input" type="text" id="title-eric" placeholder="ex: Arquitetura do módulo X, Threat model…">
+      </div>
+    </div>
+    <label class="form-label" style="display:block;margin-bottom:6px">Anotações</label>
+    <textarea class="form-textarea" id="content-eric" placeholder="Pontos discutidos, feedbacks recebidos, ações combinadas, próximos passos…"></textarea>
+    <div class="form-footer">
+      <button class="save-btn" onclick="saveEntry('eric')">Salvar anotação</button>
+      <span class="saved-msg" id="saved-eric">Salvo ✓</span>
+    </div>
+  </div>
+  <div class="sec-label">Histórico</div>
+  <div class="entries-list" id="entries-eric"><div class="empty-state">Nenhuma anotação ainda — adicione a primeira acima.</div></div>
+</div>
+
+<footer>
+  <span>Denizard · 1:1 Anotações · FC · 2026</span>
+  <span>1on1.html · GitHub Pages · Supabase</span>
+</footer>
+
+</div>
+<script>
+// ── SUPABASE ─────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://cusjxplmmscgtejyfrtz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1c2p4cGxtbXNjZ3RlanlmcnR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2Mjk1MjUsImV4cCI6MjA5NzIwNTUyNX0.vJs8xJ4a03n_9kH3LxuzbBxb8mXHNGl3Mid45ImvJBU';
+const STORE_KEY = 'pdi-1on1-v1';
+let sb = null;
+try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
+
+// ── LOCAL STORAGE FALLBACK ────────────────────────────────────────
+function getLocal(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }catch{ return {}; } }
+function setLocal(s){ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
+
+// ── TABS ──────────────────────────────────────────────────────────
+function switchTab(person){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`[onclick="switchTab('${person}')"]`).classList.add('active');
+  document.getElementById('tab-' + person).classList.add('active');
+  loadEntries(person);
+}
+
+// ── SAVE ENTRY ────────────────────────────────────────────────────
+async function saveEntry(person){
+  const date    = document.getElementById('date-' + person).value;
+  const title   = document.getElementById('title-' + person).value.trim();
+  const content = document.getElementById('content-' + person).value.trim();
+  if(!content){ alert('Escreva algo antes de salvar.'); return; }
+  const entry = { person, date: date || new Date().toISOString().slice(0,10), title: title || 'Sem título', content, created_at: new Date().toISOString() };
+
+  if(sb){
+    try{
+      await sb.from('pdi_1on1').insert(entry);
+    }catch(e){
+      // table might not exist yet, fallback to local
+      const s = getLocal();
+      if(!s[person]) s[person] = [];
+      s[person].unshift({...entry, id: Date.now()});
+      setLocal(s);
+    }
+  } else {
+    const s = getLocal();
+    if(!s[person]) s[person] = [];
+    s[person].unshift({...entry, id: Date.now()});
+    setLocal(s);
+  }
+
+  // clear form
+  document.getElementById('date-' + person).value = '';
+  document.getElementById('title-' + person).value = '';
+  document.getElementById('content-' + person).value = '';
+
+  const msg = document.getElementById('saved-' + person);
+  msg.classList.add('show');
+  setTimeout(()=> msg.classList.remove('show'), 2000);
+  loadEntries(person);
+}
+
+// ── LOAD ENTRIES ──────────────────────────────────────────────────
+async function loadEntries(person){
+  let entries = [];
+  if(sb){
+    try{
+      const { data } = await sb.from('pdi_1on1').select('*').eq('person', person).order('created_at', { ascending: false });
+      if(data && data.length) entries = data;
+      else throw new Error('empty');
+    }catch{
+      const s = getLocal();
+      entries = (s[person] || []);
+    }
+  } else {
+    const s = getLocal();
+    entries = (s[person] || []);
+  }
+  renderEntries(person, entries);
+}
+
+// ── RENDER ENTRIES ────────────────────────────────────────────────
+function renderEntries(person, entries){
+  const container = document.getElementById('entries-' + person);
+  if(!entries.length){
+    container.innerHTML = '<div class="empty-state">Nenhuma anotação ainda — adicione a primeira acima.</div>';
+    return;
+  }
+  const badgeClass = { larissa:'badge-la', elton:'badge-el', eric:'badge-er' }[person];
+  container.innerHTML = entries.map(e => `
+    <div class="entry-card" data-id="${e.id||e.created_at}">
+      <div class="entry-header">
+        <span class="entry-date">${formatDate(e.date)}</span>
+        <span class="entry-type-badge ${badgeClass}">${person.charAt(0).toUpperCase()+person.slice(1)}</span>
+      </div>
+      <div class="entry-title">${escHtml(e.title)}</div>
+      <div class="entry-content">${escHtml(e.content)}</div>
+      <div class="entry-actions">
+        <button class="delete-btn" onclick="deleteEntry('${person}', '${e.id||e.created_at}')">Excluir</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── DELETE ────────────────────────────────────────────────────────
+async function deleteEntry(person, id){
+  if(!confirm('Excluir esta anotação?')) return;
+  if(sb){
+    try{ await sb.from('pdi_1on1').delete().eq('id', id); }catch{}
+  }
+  const s = getLocal();
+  if(s[person]) s[person] = s[person].filter(e => String(e.id||e.created_at) !== String(id));
+  setLocal(s);
+  loadEntries(person);
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function formatDate(d){
+  if(!d) return '—';
+  const [y,m,day] = d.slice(0,10).split('-');
+  return `${day}/${m}/${y}`;
+}
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── THEME ─────────────────────────────────────────────────────────
+function toggleTheme(){
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('pdi-theme', isDark ? 'light' : 'dark');
+}
+const savedTheme = localStorage.getItem('pdi-theme');
+if(savedTheme){ document.documentElement.setAttribute('data-theme', savedTheme); document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️'; }
+
+// ── INIT ──────────────────────────────────────────────────────────
+// Set today as default date
+['larissa','elton','eric'].forEach(p => {
+  const el = document.getElementById('date-' + p);
+  if(el) el.value = new Date().toISOString().slice(0,10);
+});
+loadEntries('larissa');
+</script>
+<script>const PDI_PASS="pdi@fc2026";
+const PASS_KEY="pdi-access-v1";
+function checkPass(){
+  const v=document.getElementById("lockInput").value;
+  if(v===PDI_PASS){
+    sessionStorage.setItem(PASS_KEY,"1");
+    const o=document.getElementById("lockOverlay");
+    o.style.opacity="0";o.style.transition="opacity 0.3s";
+    setTimeout(()=>o.remove(),300);
+  } else {
+    const i=document.getElementById("lockInput");
+    const e=document.getElementById("lockError");
+    i.classList.add("error");e.classList.add("show");
+    setTimeout(()=>{i.classList.remove("error");i.value="";},400);
+  }
+}
+if(sessionStorage.getItem(PASS_KEY)!=="1"){
+  document.addEventListener("DOMContentLoaded",()=>{
+    const o=document.getElementById("lockOverlay");
+    if(o){o.style.display="flex";}
+  });
+} else {
+  document.addEventListener("DOMContentLoaded",()=>{
+    const o=document.getElementById("lockOverlay");
+    if(o) o.remove();
+  });
+}</script>
+</body>
+</html>
