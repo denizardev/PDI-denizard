@@ -35,6 +35,7 @@
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:16.5px;line-height:1.6;font-weight:300;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
 .page{max-width:1040px;margin:0 auto;padding:0 28px 100px}
+.content-wrap{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:32px 36px;margin-top:24px}
 
 /* TOP NAV */
 .topnav{
@@ -270,7 +271,7 @@ footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-co
     <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
   </div>
 </nav>
-
+<div class="content-wrap">
 <!-- HERO -->
 <header class="hero">
   <div class="hero-left">
@@ -279,10 +280,9 @@ footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-co
     <h1>QA com<br>visão de<br><em>segurança</em></h1>
     <p class="hero-desc">Evolução técnica no contexto real da FC — Playwright, k6, skills/agentes, regras de negócio, SellerCenter e Anymarket — com segurança como diferencial.</p>
     <div class="hero-chips">
-      <span class="chip hi">Versão QA-focused</span>
-      <span class="chip">Denizard · FC</span>
-      <span class="chip">Larissa · Elton · Eric</span>
-      <span class="chip">Playwright + k6 + Skills</span>
+      <span class="chip hi">QA-focused</span>
+      <span class="chip">Jun/2026 → Dez/2026</span>
+      <span class="chip">Plano 1 de 3</span>
     </div>
   </div>
   </div>
@@ -740,6 +740,7 @@ footer{padding-top:20px;border-top:1px solid var(--line);display:flex;justify-co
   </div>
 </div>
 
+</div><!-- /content-wrap -->
 <footer>
   <span>Denizard · PDI QA-focused · Plano 1/3 · FC · Jun/2026–Dez/2026</span>
   <span>pdi-qa.html · GitHub Pages</span>
@@ -818,33 +819,65 @@ if (savedTheme) {
   document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
 }
 
-// ── TASKS ────────────────────────────────────────────────────────
+
+// ── TASKS — Supabase sync ─────────────────────────────────────────
 const TASK_STORE = 'pdi-qa-tasks-v3';
-function getTaskState() { try { return JSON.parse(localStorage.getItem(TASK_STORE) || '{}'); } catch { return {}; } }
-function setTaskState(s) { localStorage.setItem(TASK_STORE, JSON.stringify(s)); }
-function updateProgress(qId) {
-  const items = document.querySelectorAll(`[data-id^="${qId}-"]`);
-  const done = [...items].filter(i => i.classList.contains('done')).length;
-  const pct = items.length ? Math.round(done / items.length * 100) : 0;
-  const fill = document.getElementById('prog-' + qId);
-  const label = document.getElementById('pct-' + qId);
-  if (fill) fill.style.width = pct + '%';
-  if (label) label.textContent = pct + '%';
+const PAGE_ID_TASKS = 'qa';
+
+function getTaskState(){try{return JSON.parse(localStorage.getItem(TASK_STORE)||'{}');}catch{return {};}}
+function setTaskState(s){localStorage.setItem(TASK_STORE,JSON.stringify(s));}
+
+function updateProgress(qId){
+  const items=document.querySelectorAll(`[data-id^="${qId}-"]`);
+  const done=[...items].filter(i=>i.classList.contains('done')).length;
+  const pct=items.length?Math.round(done/items.length*100):0;
+  const fill=document.getElementById('prog-'+qId);
+  const label=document.getElementById('pct-'+qId);
+  if(fill)fill.style.width=pct+'%';
+  if(label)label.textContent=pct+'%';
 }
-function initTasks() {
-  const state = getTaskState();
-  document.querySelectorAll('.task-item').forEach(item => {
-    const id = item.dataset.id;
-    if (state[id]) { item.classList.add('done'); item.querySelector('.task-check').textContent = '✓'; }
-    item.addEventListener('click', () => {
-      const isDone = item.classList.toggle('done');
-      item.querySelector('.task-check').textContent = isDone ? '✓' : '';
-      const s = getTaskState(); s[id] = isDone; setTaskState(s);
-      updateProgress(id.split('-')[0]);
-    });
+
+async function toggleTask(item){
+  const id=item.dataset.id;
+  const isDone=item.classList.toggle('done');
+  item.querySelector('.task-check').textContent=isDone?'✓':'';
+  // save local immediately
+  const s=getTaskState();s[id]=isDone;setTaskState(s);
+  updateProgress(id.split('-')[0]);
+  // sync to Supabase
+  if(sb){
+    try{
+      await sb.from('pdi_progress').upsert(
+        {page:PAGE_ID_TASKS,task_id:id,done:isDone},
+        {onConflict:'page,task_id'}
+      );
+    }catch(e){console.warn('Supabase sync error:',e);}
+  }
+}
+
+async function loadTasks(){
+  // Load from Supabase first, fallback to localStorage
+  if(sb){
+    try{
+      const {data}=await sb.from('pdi_progress').select('task_id,done').eq('page',PAGE_ID_TASKS);
+      if(data&&data.length){
+        // update localStorage with remote state
+        const s=getTaskState();
+        data.forEach(row=>{s[row.task_id]=row.done;});
+        setTaskState(s);
+      }
+    }catch(e){console.warn('Supabase load error:',e);}
+  }
+  // Apply state to DOM
+  const state=getTaskState();
+  document.querySelectorAll('.task-item').forEach(item=>{
+    const id=item.dataset.id;
+    if(state[id]){item.classList.add('done');item.querySelector('.task-check').textContent='✓';}
+    item.addEventListener('click',()=>toggleTask(item));
   });
   ['q1','q2','q3','q4'].forEach(updateProgress);
 }
+
 
 // ── ENTRANCE ANIMATION ───────────────────────────────────────────
 const obs = new IntersectionObserver(entries => {
@@ -860,7 +893,7 @@ if (big) {
   big.addEventListener('mouseleave', () => big.style.color = 'var(--line-2)');
 }
 
-initTasks();
+loadTasks();
 </script>
 <script>const PDI_PASS="pdi@fc2026";
 const PASS_KEY="pdi-access-v1";

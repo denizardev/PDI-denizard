@@ -39,6 +39,7 @@ body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',sans-seri
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(139,26,58,0.015) 2px,rgba(139,26,58,0.015) 4px);pointer-events:none;z-index:0}
 [data-theme="light"] body::before{opacity:0.4}
 .page{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:0 28px 100px}
+.content-wrap{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:32px 36px;margin-top:24px}
 
 /* TOP NAV */
 .topnav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:14px 0;margin-bottom:8px;background:var(--bg);border-bottom:1px solid var(--line);transition:background 0.3s}
@@ -271,18 +272,17 @@ footer{padding-top:18px;border-top:1px solid var(--line);display:flex;justify-co
     <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
   </div>
 </nav>
-
+<div class="content-wrap">
 <header class="hero">
   <div class="hero-left">
     <div class="hero-eyebrow">PDI — Plano de Desenvolvimento Individual</div>
     <div class="hero-plan-badge">Plano 1 de 3 · 12 meses · Jun/2026 → Dez/2026</div>
     <h1>CYBER<br><span class="acc">SECURITY</span><br>PATHWAY</h1>
-    <p class="hero-desc">Trajetória de 12 meses ancorada na ementa Red Team CEIC/UFPE, com labs práticos externos e entendimento de impacto sistêmico. Plano 1 de 3 anos rumo ao Pentester na FC.</p>
+    <p class="hero-desc">Trajetória de 6 meses ancorada na ementa Red Team CEIC/UFPE, com labs práticos externos e entendimento de impacto sistêmico. Plano 1 de 3 anos rumo ao Pentester na FC.</p>
     <div class="hero-chips">
       <span class="chip hi">Cybersecurity-focused</span>
-      <span class="chip">Denizard · FC</span>
-      <span class="chip">Larissa · Elton · Eric</span>
-      <span class="chip">CEIC Red Team · eJPT</span>
+      <span class="chip">Jun/2026 → Dez/2026</span>
+      <span class="chip">Plano 1 de 3</span>
     </div>
   </div>
   </div>
@@ -773,6 +773,657 @@ footer{padding-top:18px;border-top:1px solid var(--line);display:flex;justify-co
   </div>
 </div>
 
+</div><!-- /content-wrap -->
+<footer>
+  <span>Denizard · PDI Cybersecurity · Plano 1/3 · FC · Jun/2026–Dez/2026</span>
+  <span>pdi-cyber.html · GitHub Pages</span>
+</footer>
+
+</div>
+
+<script>
+const SUPABASE_URL = 'https://cusjxplmmscgtejyfrtz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1c2p4cGxtbXNjZ3RlanlmcnR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2Mjk1MjUsImV4cCI6MjA5NzIwNTUyNX0.vJs8xJ4a03n_9kH3LxuzbBxb8mXHNGl3Mid45ImvJBU';
+const PAGE_ID = 'cyber';
+let sb = null;
+try {
+  if (SUPABASE_URL !== 'https://cusjxplmmscgtejyfrtz.supabase.co') {
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    loadNotes();
+  }
+} catch(e) { console.warn('Supabase não configurado — usando localStorage.'); }
+
+async function saveNote(author) {
+  const content = document.getElementById('note-' + author).value;
+  const msg = document.getElementById('saved-' + author);
+  if (sb) {
+    await sb.from('pdi_notes').upsert(
+      { page: PAGE_ID, author, content, updated_at: new Date().toISOString() },
+      { onConflict: 'page,author' }
+    );
+  } else {
+    const s = JSON.parse(localStorage.getItem('pdi-cyber-v3') || '{}');
+    s['note-' + author] = content;
+    localStorage.setItem('pdi-cyber-v3', JSON.stringify(s));
+  }
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2000);
+}
+
+async function loadNotes() {
+  if (sb) {
+    const { data } = await sb.from('pdi_notes').select('author,content').eq('page', PAGE_ID);
+    if (data) data.forEach(row => {
+      const el = document.getElementById('note-' + row.author);
+      if (el) el.value = row.content || '';
+    });
+  } else {
+    const s = JSON.parse(localStorage.getItem('pdi-cyber-v3') || '{}');
+    ['larissa','elton','eric'].forEach(a => {
+      const el = document.getElementById('note-' + a);
+      if (el && s['note-' + a]) el.value = s['note-' + a];
+    });
+  }
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('pdi-theme', isDark ? 'light' : 'dark');
+}
+const savedTheme = localStorage.getItem('pdi-theme');
+if (savedTheme) {
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.querySelector('.theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
+}
+
+const TASK_STORE = 'pdi-cyber-tasks-v3';
+const PAGE_ID_TASKS = 'cyber';
+
+function getTaskState(){try{return JSON.parse(localStorage.getItem(TASK_STORE)||'{}');}catch{return {};}}
+function setTaskState(s){localStorage.setItem(TASK_STORE,JSON.stringify(s));}
+
+function updateProgress(qId){
+  const items=document.querySelectorAll(`[data-id^="${qId}-"]`);
+  const done=[...items].filter(i=>i.classList.contains('done')).length;
+  const pct=items.length?Math.round(done/items.length*100):0;
+  const fill=document.getElementById('prog-'+qId);
+  const label=document.getElementById('pct-'+qId);
+  if(fill)fill.style.width=pct+'%';
+  if(label)label.textContent=pct+'%';
+}
+
+async function toggleTask(item){
+  const id=item.dataset.id;
+  const isDone=item.classList.toggle('done');
+  item.querySelector('.task-check').textContent=isDone?'✓':'';
+  const s=getTaskState();s[id]=isDone;setTaskState(s);
+  updateProgress(id.split('-')[0]);
+  if(sb){
+    try{
+      await sb.from('pdi_progress').upsert(
+        {page:PAGE_ID_TASKS,task_id:id,done:isDone},
+        {onConflict:'page,task_id'}
+      );
+    }catch(e){console.warn('Supabase sync error:',e);}
+  }
+}
+
+async function loadTasks(){
+  if(sb){
+    try{
+      const {data}=await sb.from('pdi_progress').select('task_id,done').eq('page',PAGE_ID_TASKS);
+      if(data&&data.length){
+        const s=getTaskState();
+        data.forEach(row=>{s[row.task_id]=row.done;});
+        setTaskState(s);
+      }
+    }catch(e){console.warn('Supabase load error:',e);}
+  }
+  const state=getTaskState();
+  document.querySelectorAll('.task-item').forEach(item=>{
+    const id=item.dataset.id;
+    if(state[id]){item.classList.add('done');item.querySelector('.task-check').textContent='✓';}
+    item.addEventListener('click',()=>toggleTask(item));
+  });
+  ['q1','q2','q3','q4'].forEach(updateProgress);
+}
+loadTasks();tml>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDI · Cybersecurity · Denizard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+<body>
+<div class="lock-overlay" id="lockOverlay">
+  <div class="lock-box">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">Acesso restrito</div>
+    <div class="lock-sub">PDI · Denizard · FC</div>
+    <input class="lock-input" type="password" id="lockInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPass()">
+    <button class="lock-btn" onclick="checkPass()">Entrar</button>
+    <div class="lock-error" id="lockError">Senha incorreta</div>
+  </div>
+</div>
+<div class="page">
+
+<nav class="topnav">
+  <a class="back-btn" href="index.html">← Voltar ao início</a>
+  <div class="topnav-right">
+    <span class="page-label">PDI Cyber-focused</span>
+    <button class="theme-toggle" onclick="toggleTheme()">☀️</button>
+  </div>
+</nav>
+<div class="content-wrap">
+<header class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">PDI — Plano de Desenvolvimento Individual</div>
+    <div class="hero-plan-badge">Plano 1 de 3 · 12 meses · Jun/2026 → Dez/2026</div>
+    <h1>CYBER<br><span class="acc">SECURITY</span><br>PATHWAY</h1>
+    <p class="hero-desc">Trajetória de 6 meses ancorada na ementa Red Team CEIC/UFPE, com labs práticos externos e entendimento de impacto sistêmico. Plano 1 de 3 anos rumo ao Pentester na FC.</p>
+    <div class="hero-chips">
+      <span class="chip hi">Cybersecurity-focused</span>
+      <span class="chip">Jun/2026 → Dez/2026</span>
+      <span class="chip">Plano 1 de 3</span>
+    </div>
+  </div>
+  </div>
+</header>
+
+<div class="version-bar"><span class="pulse"></span>v3.0 · cybersecurity-focused · ceic red team · 5 pilares · plano 1/3</div>
+
+<div class="alert">
+  <div class="alert-label">Contexto estratégico — Larissa, Elton & Eric</div>
+  <div class="alert-text">Este PDI apresenta a trajetória de migração para Cybersecurity de forma transparente. Conhecimento ofensivo aprofunda QA e gera valor imediato para a FC. Meta de 3 anos: Pentester / Security Analyst na própria empresa. Este é o Plano 1 de 3.</div>
+</div>
+
+<!-- ACTIVITIES -->
+<div class="activities-section">
+  <div class="sec-label">Atividades em andamento & concluídas</div>
+  <div class="activities-grid">
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">OverTheWire Bandit</div>
+        <div class="activity-meta">Nível 10–15 · 2h/dia útil</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">HTB Starting Point</div>
+        <div class="activity-meta">Introdução · conta criada</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">Fortinet NSE 1 / 2</div>
+        <div class="activity-meta">Certificação gratuita</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-active"></div>
+      <div class="activity-content">
+        <div class="activity-title">Pós-graduação CEIC/UFPE</div>
+        <div class="activity-meta">Red Team + Blue Team · primeiros módulos</div>
+        <span class="activity-tag tag-active">Em andamento</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-done"></div>
+      <div class="activity-content">
+        <div class="activity-title">Kali Linux VM</div>
+        <div class="activity-meta">VMware Workstation configurado</div>
+        <span class="activity-tag tag-done">Configurado</span>
+      </div>
+    </div>
+    <div class="activity-card">
+      <div class="activity-status-dot dot-done"></div>
+      <div class="activity-content">
+        <div class="activity-title">Aspectos de Segurança da Informação</div>
+        <div class="activity-meta">CEIC · módulo inicial</div>
+        <span class="activity-tag tag-done">Iniciado</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec-label">Pilares</div>
+<div class="legend-row">
+  <div class="leg"><div class="leg-mark" style="background:var(--wine-bright)"></div>Red Team / Ofensivo</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--amber)"></div>CEIC — ementa (datas reais)</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--teal)"></div>Labs externos + CTFs</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--purple)"></div>Negócio & impacto sistêmico</div>
+  <div class="leg"><div class="leg-mark" style="background:var(--green)"></div>QA como base técnica</div>
+</div>
+
+<div class="sec-label">Trimestres</div>
+<div class="quarters" id="quarters">
+
+<details class="quarter" data-q="q1" open>
+  <summary class="q-summary">
+    <span class="q-tag t-q1">T1 · Jun/2026 – Jul/2026</span>
+    <div class="q-info">
+      <div class="q-name">Fundamentos & reconhecimento — base técnica real</div>
+      <div class="q-sub">Bandit 15→25 · Kali VM · CEIC Aspectos Seg. Info (Mai/Jun 2026) · mapeamento FC</div>
+    </div>
+    <div class="q-progress-wrap">
+      <div class="q-progress-bar"><div class="q-progress-fill" id="prog-q1"></div></div>
+      <span class="q-progress-pct" id="pct-q1">0%</span>
+    </div>
+    <span class="q-chevron">⌄</span>
+  </summary>
+  <div class="q-body">
+    <div class="pillars">
+      <div class="pillar p-red">
+        <div class="p-title">Red Team — fundamentos</div>
+        <div class="status-row"><span class="status-badge s-current">Em andamento</span></div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q1-r1"><div class="task-check"></div><span class="task-text"><a href="https://overthewire.org/wargames/bandit/" target="_blank">OverTheWire Bandit ↗</a> — avançar do nível 15 até 25</span></li>
+          <li class="task-item" data-id="q1-r2"><div class="task-check"></div><span class="task-text">Refinar <a href="https://www.kali.org/get-kali/" target="_blank">Kali Linux VM ↗</a> — dominar grep, find, netcat, curl, ssh tunneling</span></li>
+          <li class="task-item" data-id="q1-r3"><div class="task-check"></div><span class="task-text">Estudar fases do pentest: reconhecimento, enumeração, exploração, pós-exploração</span></li>
+          <li class="task-item" data-id="q1-r4"><div class="task-check"></div><span class="task-text">Criar repositório GitHub para write-ups e notas dos labs</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-ceic">
+        <div class="p-title">CEIC — Aspectos Seg. Info</div>
+        <div class="ceic-tag">📚 CEIC Red Team<span class="ceic-date">30/Mai → 14/Jun 2026</span></div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q1-c1"><div class="task-check"></div><span class="task-text">Estudar malware types: vírus, worm, trojan, rootkit, backdoor, spyware</span></li>
+          <li class="task-item" data-id="q1-c2"><div class="task-check"></div><span class="task-text">Engenharia social e phishing — material antes das aulas de mai/2026</span></li>
+          <li class="task-item" data-id="q1-c3"><div class="task-check"></div><span class="task-text">Concluir <a href="https://training.fortinet.com/local/staticpage/view.php?page=nse-2" target="_blank">NSE 2 ↗</a> + <a href="https://training.fortinet.com/local/staticpage/view.php?page=nse-3" target="_blank">NSE 3 ↗</a></span></li>
+          <li class="task-item" data-id="q1-c4"><div class="task-check"></div><span class="task-text">Praticar Kali Linux antecipando aula híbrida de 31/mai</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-lab">
+        <div class="p-title">Labs externos</div>
+        <div class="status-row"><span class="status-badge s-current">2h/dia útil</span></div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q1-l1"><div class="task-check"></div><span class="task-text"><a href="https://tryhackme.com/path/outline/presecurity" target="_blank">TryHackMe — Pre-Security Path ↗</a></span></li>
+          <li class="task-item" data-id="q1-l2"><div class="task-check"></div><span class="task-text"><a href="https://www.hackthebox.com/starting-point" target="_blank">HTB Starting Point ↗</a> — completar todos os labs gratuitos</span></li>
+          <li class="task-item" data-id="q1-l3"><div class="task-check"></div><span class="task-text">Mapear superfície de ataque da FC: endpoints, auth, inputs, uploads, banco</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-biz">
+        <div class="p-title">Negócio & Impacto</div>
+        <div class="status-row"><span class="status-badge s-new">Novo pilar</span></div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q1-bz1"><div class="task-check"></div><span class="task-text">Mapear fluxos críticos da FC que seriam mais impactantes se comprometidos</span></li>
+          <li class="task-item" data-id="q1-bz2"><div class="task-check"></div><span class="task-text">Entender arquitetura da integração SellerCenter/Anymarket com Eric — pontos de falha?</span></li>
+          <li class="task-item" data-id="q1-bz3"><div class="task-check"></div><span class="task-text">"Se atacante comprometesse X, qual seria o impacto de negócio?" — documentar para 3 sistemas</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-qa">
+        <div class="p-title">QA como base</div>
+        <div class="status-row"><span class="status-badge s-current">Trabalho atual</span></div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q1-q1"><div class="task-check"></div><span class="task-text">Ao testar SellerCenter/Anymarket: identificar se endpoints validam autenticação corretamente</span></li>
+          <li class="task-item" data-id="q1-q2"><div class="task-check"></div><span class="task-text">Nas queries de banco: identificar campos potencialmente vulneráveis a SQL injection</span></li>
+          <li class="task-item" data-id="q1-q3"><div class="task-check"></div><span class="task-text">Criar checklist de segurança para revisão de PRs no fluxo Jira atual</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="kpis">
+      <span class="kpi kpi-red">Bandit nível 25 concluído</span>
+      <span class="kpi kpi-ceic">NSE 2 + 3 concluídos</span>
+      <span class="kpi kpi-lab">HTB Starting Point completo</span>
+      <span class="kpi kpi-biz">Mapa de impacto de negócio da FC</span>
+      <span class="kpi kpi-qa">Checklist de segurança em PRs</span>
+    </div>
+  </div>
+</details>
+
+<details class="quarter" data-q="q2">
+  <summary class="q-summary">
+    <span class="q-tag t-q2">T2 · Ago/2026 – Set/2026</span>
+    <div class="q-info">
+      <div class="q-name">OSINT + Web Pentest I — exploração começa</div>
+      <div class="q-sub">CEIC OSINT I (Jul/2026) · TryHackMe Jr Pentester · 1ª máquina HTB</div>
+    </div>
+    <div class="q-progress-wrap">
+      <div class="q-progress-bar"><div class="q-progress-fill" id="prog-q2"></div></div>
+      <span class="q-progress-pct" id="pct-q2">0%</span>
+    </div>
+    <span class="q-chevron">⌄</span>
+  </summary>
+  <div class="q-body">
+    <div class="pillars">
+      <div class="pillar p-red">
+        <div class="p-title">Red Team — exploração web</div>
+        <div class="status-row"><span class="status-badge s-locked">Bloqueado até T1</span></div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q2-r1"><div class="task-check"></div><span class="task-text"><a href="https://tryhackme.com/path/outline/jrpenetrationtester" target="_blank">TryHackMe — Jr Penetration Tester ↗</a> (módulos 1–5)</span></li>
+          <li class="task-item" data-id="q2-r2"><div class="task-check"></div><span class="task-text"><a href="https://owasp.org/www-project-top-ten/" target="_blank">OWASP Top 10 ↗</a> com labs em <a href="https://dvwa.co.uk/" target="_blank">DVWA ↗</a> e <a href="https://owasp.org/www-project-webgoat/" target="_blank">WebGoat ↗</a></span></li>
+          <li class="task-item" data-id="q2-r3"><div class="task-check"></div><span class="task-text">Enumeração: <a href="https://nmap.org/" target="_blank">Nmap ↗</a>, <a href="https://github.com/OJ/gobuster" target="_blank">Gobuster ↗</a>, Nikto em labs</span></li>
+          <li class="task-item" data-id="q2-r4"><div class="task-check"></div><span class="task-text"><a href="https://www.hackthebox.com/" target="_blank">HackTheBox ↗</a> — 1ª máquina Very Easy com write-up</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-ceic">
+        <div class="p-title">CEIC — OSINT I</div>
+        <div class="ceic-tag">📚 CEIC Red Team<span class="ceic-date">04 → 19/Jul 2026</span></div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q2-c1"><div class="task-check"></div><span class="task-text"><a href="https://www.maltego.com/" target="_blank">Maltego ↗</a>, <a href="https://www.shodan.io/" target="_blank">Shodan ↗</a>, <a href="https://github.com/laramies/theHarvester" target="_blank">theHarvester ↗</a> — antecipar conteúdo OSINT</span></li>
+          <li class="task-item" data-id="q2-c2"><div class="task-check"></div><span class="task-text">Google Dorks: levantar exposição pública da FC (autorizado)</span></li>
+          <li class="task-item" data-id="q2-c3"><div class="task-check"></div><span class="task-text">Entender phishing, clonagem de WhatsApp, golpes on-line (conteúdo CEIC)</span></li>
+          <li class="task-item" data-id="q2-c4"><div class="task-check"></div><span class="task-text">Iniciar trilha <a href="https://www.securityblue.team/courses/blue-team-junior-analyst-pathway" target="_blank">BTJA — Security Blue Team ↗</a></span></li>
+        </ul>
+      </div>
+      <div class="pillar p-lab">
+        <div class="p-title">Labs — primeiros CTFs</div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q2-l1"><div class="task-check"></div><span class="task-text"><a href="https://picoctf.org/" target="_blank">PicoCTF ↗</a> — plataforma sempre aberta, ideal para iniciantes</span></li>
+          <li class="task-item" data-id="q2-l2"><div class="task-check"></div><span class="task-text">Resolver 5+ challenges de Web e Linux no <a href="https://ctftime.org/" target="_blank">CTFtime ↗</a></span></li>
+          <li class="task-item" data-id="q2-l3"><div class="task-check"></div><span class="task-text">Fortinet <a href="https://training.fortinet.com/local/staticpage/view.php?page=nse-4" target="_blank">NSE 4 ↗</a> (fundamentos de segurança de rede)</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-biz">
+        <div class="p-title">Negócio & Impacto</div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q2-bz1"><div class="task-check"></div><span class="task-text">Quando framework novo chegar na FC: perguntar ao Eric o impacto arquitetural antes de testar</span></li>
+          <li class="task-item" data-id="q2-bz2"><div class="task-check"></div><span class="task-text">Aplicar OSINT na FC (autorizado): o que um atacante consegue levantar sem acesso interno?</span></li>
+          <li class="task-item" data-id="q2-bz3"><div class="task-check"></div><span class="task-text">Propor ao Elton: "análise de superfície de ataque" antes dos testes de cada release</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-qa">
+        <div class="p-title">QA — mentalidade ofensiva</div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q2-q1"><div class="task-check"></div><span class="task-text">Testar inputs do SellerCenter/Anymarket: SQL injection básico em homolog (autorizado)</span></li>
+          <li class="task-item" data-id="q2-q2"><div class="task-check"></div><span class="task-text">Verificar headers HTTP de segurança (CSP, CORS, X-Frame-Options) nos deploys</span></li>
+          <li class="task-item" data-id="q2-q3"><div class="task-check"></div><span class="task-text">Reportar 1 vulnerabilidade encontrada via QA para o time (Jira + Eric)</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="kpis">
+      <span class="kpi kpi-red">1ª máquina HTB + OWASP Top 10 labs</span>
+      <span class="kpi kpi-ceic">OSINT toolkit configurado + NSE 4</span>
+      <span class="kpi kpi-lab">PicoCTF + BTJA iniciado</span>
+      <span class="kpi kpi-biz">Superfície de ataque proposta ao Elton</span>
+      <span class="kpi kpi-qa">1 vulnerabilidade reportada via QA</span>
+    </div>
+  </div>
+</details>
+
+<details class="quarter" data-q="q3">
+  <summary class="q-summary">
+    <span class="q-tag t-q3">T3 · Out/2026 – Nov/2026</span>
+    <div class="q-info">
+      <div class="q-name">Pentest I + Gerenciamento de Incidentes — CEIC intensifica</div>
+      <div class="q-sub">CEIC Pentest I Web (Ago/2026) · Incidentes (Set/2026) · eJPT prep</div>
+    </div>
+    <div class="q-progress-wrap">
+      <div class="q-progress-bar"><div class="q-progress-fill" id="prog-q3"></div></div>
+      <span class="q-progress-pct" id="pct-q3">0%</span>
+    </div>
+    <span class="q-chevron">⌄</span>
+  </summary>
+  <div class="q-body">
+    <div class="pillars">
+      <div class="pillar p-red">
+        <div class="p-title">Red Team — pentest web</div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q3-r1"><div class="task-check"></div><span class="task-text"><a href="https://www.hackthebox.com/" target="_blank">HackTheBox ↗</a> — 3 máquinas Easy com write-ups (total: 4)</span></li>
+          <li class="task-item" data-id="q3-r2"><div class="task-check"></div><span class="task-text">Privilege escalation Linux: <a href="https://tryhackme.com/module/privilege-escalation-and-containment" target="_blank">TryHackMe módulo ↗</a></span></li>
+          <li class="task-item" data-id="q3-r3"><div class="task-check"></div><span class="task-text">Introdução ao <a href="https://www.metasploit.com/" target="_blank">Metasploit Framework ↗</a> em ambiente isolado</span></li>
+          <li class="task-item" data-id="q3-r4"><div class="task-check"></div><span class="task-text">1 CTF ao vivo (<a href="https://ctftime.org/" target="_blank">CTFtime ↗</a>) com write-up publicado</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-ceic">
+        <div class="p-title">CEIC — Pentest I + Incidentes</div>
+        <div class="ceic-tag">📚 CEIC Red Team<span class="ceic-date">01/Ago + 29/Ago 2026</span></div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q3-c1"><div class="task-check"></div><span class="task-text">Pentest I Web (01–16/Ago): levantamento, análises manuais, relatório executivo</span></li>
+          <li class="task-item" data-id="q3-c2"><div class="task-check"></div><span class="task-text">Gerenciamento de Incidentes (29/Ago–13/Set): identificação, resposta, plano de recuperação</span></li>
+          <li class="task-item" data-id="q3-c3"><div class="task-check"></div><span class="task-text">Elaborar relatório de pentest completo como entrega da disciplina</span></li>
+          <li class="task-item" data-id="q3-c4"><div class="task-check"></div><span class="task-text">Preparar para <a href="https://ine.com/learning/certifications/internal/elearnsecurity-junior-penetration-tester-cert" target="_blank">eJPT ↗</a> — trilha INE Security Starter</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-lab">
+        <div class="p-title">Labs — portfólio crescendo</div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q3-l1"><div class="task-check"></div><span class="task-text">Publicar 3+ write-ups técnicos no GitHub (um por máquina HTB)</span></li>
+          <li class="task-item" data-id="q3-l2"><div class="task-check"></div><span class="task-text">Montar ambiente de forense básica (Autopsy, Volatility) em VM dedicada</span></li>
+          <li class="task-item" data-id="q3-l3"><div class="task-check"></div><span class="task-text">Concluir <a href="https://www.securityblue.team/courses/blue-team-junior-analyst-pathway" target="_blank">BTJA ↗</a> — Security Blue Team Junior Analyst</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-biz">
+        <div class="p-title">Negócio & Impacto</div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q3-bz1"><div class="task-check"></div><span class="task-text">Simular: "se eu fosse atacar a FC, por onde entraria?" — documentar e apresentar ao Eric</span></li>
+          <li class="task-item" data-id="q3-bz2"><div class="task-check"></div><span class="task-text">Criar plano de resposta a incidentes básico para a FC baseado na disciplina CEIC</span></li>
+          <li class="task-item" data-id="q3-bz3"><div class="task-check"></div><span class="task-text">Apresentar ao Larissa: relatório de postura de segurança e roadmap de melhorias</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-qa">
+        <div class="p-title">QA — segurança sistematizada</div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q3-q1"><div class="task-check"></div><span class="task-text">Análise de logs de servidor em incidentes — usar conhecimento do Bandit na prática</span></li>
+          <li class="task-item" data-id="q3-q2"><div class="task-check"></div><span class="task-text">Propor threat model básico da aplicação FC (<a href="https://owasp.org/www-community/Threat_Modeling_Process" target="_blank">STRIDE/OWASP ↗</a>)</span></li>
+          <li class="task-item" data-id="q3-q3"><div class="task-check"></div><span class="task-text">Propor "Security Test Cases" formalmente no plano de testes do Jira</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="kpis">
+      <span class="kpi kpi-red">4 máquinas HTB + 1 CTF ao vivo</span>
+      <span class="kpi kpi-ceic">Pentest I + Incidentes CEIC concluídos</span>
+      <span class="kpi kpi-lab">BTJA concluído + 3 write-ups publicados</span>
+      <span class="kpi kpi-biz">Simulação de ataque à FC documentada</span>
+      <span class="kpi kpi-qa">Security Test Cases no Jira</span>
+    </div>
+  </div>
+</details>
+
+<details class="quarter" data-q="q4">
+  <summary class="q-summary">
+    <span class="q-tag t-q4">T4 · Dez/2026</span>
+    <div class="q-info">
+      <div class="q-name">Criptografia + eJPT + portfólio consolidado</div>
+      <div class="q-sub">CEIC Cripto (Set/Out) · Esteganografia (Out/Nov) · eJPT · conversa de transição</div>
+    </div>
+    <div class="q-progress-wrap">
+      <div class="q-progress-bar"><div class="q-progress-fill" id="prog-q4"></div></div>
+      <span class="q-progress-pct" id="pct-q4">0%</span>
+    </div>
+    <span class="q-chevron">⌄</span>
+  </summary>
+  <div class="q-body">
+    <div class="pillars">
+      <div class="pillar p-red">
+        <div class="p-title">Red Team — eJPT + portfólio</div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q4-r1"><div class="task-check"></div><span class="task-text">Concluir <a href="https://ine.com/learning/certifications/internal/elearnsecurity-junior-penetration-tester-cert" target="_blank">eJPT — eLearnSecurity Junior Penetration Tester ↗</a></span></li>
+          <li class="task-item" data-id="q4-r2"><div class="task-check"></div><span class="task-text"><a href="https://www.hackthebox.com/" target="_blank">HackTheBox ↗</a> — 8 máquinas acumuladas com write-ups</span></li>
+          <li class="task-item" data-id="q4-r3"><div class="task-check"></div><span class="task-text">Participar de mais 1 CTF ao vivo — total de 2 no plano</span></li>
+          <li class="task-item" data-id="q4-r4"><div class="task-check"></div><span class="task-text">Montar Cyber Hub no GitHub Pages consolidando portfólio completo</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-ceic">
+        <div class="p-title">CEIC — Criptografia + Estenografia</div>
+        <div class="ceic-tag">📚 CEIC Red Team<span class="ceic-date">26/Set + 24/Out 2026</span></div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q4-c1"><div class="task-check"></div><span class="task-text">Criptografia (26/Set–11/Out): antecipar com <a href="https://cryptohack.org/" target="_blank">CryptoHack ↗</a></span></li>
+          <li class="task-item" data-id="q4-c2"><div class="task-check"></div><span class="task-text">Esteganografia (24/Out–08/Nov): ocultação em mídias, detecção</span></li>
+          <li class="task-item" data-id="q4-c3"><div class="task-check"></div><span class="task-text">Conectar criptografia com pentest: identificar protocolos fracos em tráfego</span></li>
+          <li class="task-item" data-id="q4-c4"><div class="task-check"></div><span class="task-text">Avaliar <a href="https://www.comptia.org/certifications/security" target="_blank">CompTIA Security+ ↗</a> (Plano 2)</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-lab">
+        <div class="p-title">Labs + Forense Digital</div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q4-l1"><div class="task-check"></div><span class="task-text">Forense Digital I (CEIC 21/Nov–06/Dez) — antecipar com <a href="https://tryhackme.com/module/digital-forensics-and-incident-response" target="_blank">TryHackMe DFIR ↗</a></span></li>
+          <li class="task-item" data-id="q4-l2"><div class="task-check"></div><span class="task-text">Publicar 1 artigo técnico no GitHub sobre lab real do plano</span></li>
+          <li class="task-item" data-id="q4-l3"><div class="task-check"></div><span class="task-text">Propor Bug Bounty interno ou pentest anual para a FC</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-biz">
+        <div class="p-title">Negócio & Impacto</div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q4-bz1"><div class="task-check"></div><span class="task-text">Threat model completo da FC com Eric — conectar arquitetura com superfície de ataque</span></li>
+          <li class="task-item" data-id="q4-bz2"><div class="task-check"></div><span class="task-text">Apresentar ao Eric: "mapa de cobertura" — o que está coberto vs. o que fica exposto</span></li>
+          <li class="task-item" data-id="q4-bz3"><div class="task-check"></div><span class="task-text">Elaborar proposta de papel "Security Analyst" na FC para apresentar à Larissa</span></li>
+        </ul>
+      </div>
+      <div class="pillar p-qa">
+        <div class="p-title">Transição planejada</div>
+        <ul class="task-list">
+          <li class="task-item" data-id="q4-q1"><div class="task-check"></div><span class="task-text">Apresentação formal dos resultados do Plano 1 — Larissa, Elton e Eric</span></li>
+          <li class="task-item" data-id="q4-q2"><div class="task-check"></div><span class="task-text">Alinhar criação de papel "Security Analyst" na FC — sem o júnior</span></li>
+          <li class="task-item" data-id="q4-q3"><div class="task-check"></div><span class="task-text">Definir escopo e metas do Plano 2 em conjunto com a liderança</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="kpis">
+      <span class="kpi kpi-red">eJPT concluído + 8 máquinas HTB</span>
+      <span class="kpi kpi-ceic">Criptografia + Esteganografia concluídos</span>
+      <span class="kpi kpi-lab">Artigo técnico publicado</span>
+      <span class="kpi kpi-biz">Threat model + proposta de papel à Larissa</span>
+      <span class="kpi kpi-qa">Apresentação formal + Plano 2 definido</span>
+    </div>
+  </div>
+</details>
+
+</div>
+
+<!-- CERTS -->
+<div class="certs-section">
+  <div class="sec-label">Trilha de certificações — sequência lógica</div>
+  <div class="certs-track">
+    <div class="cert-item active-cert">
+      <div class="cert-badge">Agora · T1</div>
+      <div class="cert-name">Fortinet NSE 2 + 3</div>
+      <div class="cert-when">Gratuitas · já no NSE 1/2</div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-badge">T3 / T4</div>
+      <div class="cert-name">eJPT</div>
+      <div class="cert-when">Entry-level ofensivo · INE</div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-badge">Plano 2</div>
+      <div class="cert-name">CompTIA Security+</div>
+      <div class="cert-when">Reconhecimento corporativo</div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-badge">Plano 2</div>
+      <div class="cert-name">eWPT</div>
+      <div class="cert-when">Web pentest avançado</div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-badge">Plano 3</div>
+      <div class="cert-name">OSCP</div>
+      <div class="cert-when">Ouro do Red Team</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROADMAP -->
+<div class="sec-label">Jornada — visão 3 anos</div>
+<div class="roadmap">
+  <div class="roadmap-label">Trajetória de carreira</div>
+  <div class="roadmap-sublabel">Plano 1 consolida a base. Meta: Security Analyst / Pentester na FC.</div>
+  <div class="roadmap-track">
+    <span class="rs now">QA Júnior · FC</span><span class="rs-sep">→</span>
+    <span class="rs mid">QA Security / SDET</span><span class="rs-sep">→</span>
+    <span class="rs next">Security Analyst · FC</span><span class="rs-sep">→</span>
+    <span class="rs far">Pentester / Red Team</span>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<div class="projects-section">
+  <div class="sec-label">Projetos — em andamento e publicados</div>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-type">Cybersecurity · Lab</div>
+      <div class="project-name">OverTheWire Bandit Write-ups</div>
+      <p class="project-desc">Soluções dos níveis do Bandit — foco em Linux e lógica de segurança.</p>
+      <div class="project-stack"><span class="stack-tag">Linux</span><span class="stack-tag">Bash</span><span class="stack-tag">CTF</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Red Team · Lab</div>
+      <div class="project-name">HTB Starting Point</div>
+      <p class="project-desc">Primeiras máquinas do HackTheBox — reconhecimento e exploração básica.</p>
+      <div class="project-stack"><span class="stack-tag">HackTheBox</span><span class="stack-tag">Kali</span><span class="stack-tag">Nmap</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-type">Pós-graduação · CEIC</div>
+      <div class="project-name">PDI Cybersecurity Pathway</div>
+      <p class="project-desc">Este PDI — HTML/CSS puro, hospedado no GitHub Pages com Supabase.</p>
+      <div class="project-stack"><span class="stack-tag">HTML</span><span class="stack-tag">Supabase</span><span class="stack-tag">GitHub Pages</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-type">QA · Automação</div>
+      <div class="project-name">Automações Playwright FC</div>
+      <p class="project-desc">Scripts para fluxos do SellerCenter e Anymarket usando Playwright JS.</p>
+      <div class="project-stack"><span class="stack-tag">Playwright</span><span class="stack-tag">JavaScript</span><span class="stack-tag">MCP</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTES -->
+<div class="notes-section">
+  <div class="sec-label">Anotações da liderança</div>
+  <div class="notes-grid">
+    <div class="note-block">
+      <div class="note-header">
+        <div class="note-avatar av-larissa">LA</div>
+        <div class="note-info">
+          <div class="note-name">Larissa</div>
+          <div class="note-role">Gerente · FC</div>
+          <div class="note-focus nf-larissa">Foco: direcionamento estratégico, pontos de melhoria, alinhamento de carreira</div>
+        </div>
+      </div>
+      <textarea class="note-area" id="note-larissa" placeholder="Pontos de melhoria, direcionamento estratégico, feedback de carreira…"></textarea>
+      <div class="note-footer">
+        <button class="note-save-btn" onclick="saveNote('larissa')">Salvar nota</button>
+        <span class="note-saved-msg" id="saved-larissa">Salvo ✓</span>
+      </div>
+    </div>
+    <div class="note-block">
+      <div class="note-header">
+        <div class="note-avatar av-elton">EL</div>
+        <div class="note-info">
+          <div class="note-name">Elton</div>
+          <div class="note-role">QA Sênior · FC</div>
+          <div class="note-focus nf-elton">Foco: craft de QA, qualidade de processo, evolução técnica de testes</div>
+        </div>
+      </div>
+      <textarea class="note-area" id="note-elton" placeholder="Como está evoluindo o craft? Qualidade dos testes, autonomia técnica, segurança no QA…"></textarea>
+      <div class="note-footer">
+        <button class="note-save-btn" onclick="saveNote('elton')">Salvar nota</button>
+        <span class="note-saved-msg" id="saved-elton">Salvo ✓</span>
+      </div>
+    </div>
+    <div class="note-block">
+      <div class="note-header">
+        <div class="note-avatar av-eric">ER</div>
+        <div class="note-info">
+          <div class="note-name">Eric</div>
+          <div class="note-role">Arquiteto · FC</div>
+          <div class="note-focus nf-eric">Foco: impacto arquitetural, performance, segurança sistêmica, threat modeling</div>
+        </div>
+      </div>
+      <textarea class="note-area" id="note-eric" placeholder="O QA está entendendo o impacto arquitetural? Threat model, performance, integrações…"></textarea>
+      <div class="note-footer">
+        <button class="note-save-btn" onclick="saveNote('eric')">Salvar nota</button>
+        <span class="note-saved-msg" id="saved-eric">Salvo ✓</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content-wrap -->
 <footer>
   <span>Denizard · PDI Cybersecurity · Plano 1/3 · FC · Jun/2026–Dez/2026</span>
   <span>pdi-cyber.html · GitHub Pages</span>
@@ -850,20 +1501,7 @@ function updateProgress(qId) {
   if (fill) fill.style.width = pct + '%';
   if (label) label.textContent = pct + '%';
 }
-function initTasks() {
-  const state = getTaskState();
-  document.querySelectorAll('.task-item').forEach(item => {
-    const id = item.dataset.id;
-    if (state[id]) { item.classList.add('done'); item.querySelector('.task-check').textContent = '✓'; }
-    item.addEventListener('click', () => {
-      const isDone = item.classList.toggle('done');
-      item.querySelector('.task-check').textContent = isDone ? '✓' : '';
-      const s = getTaskState(); s[id] = isDone; setTaskState(s);
-      updateProgress(id.split('-')[0]);
-    });
-  });
-  ['q1','q2','q3','q4'].forEach(updateProgress);
-}
+
 const obs = new IntersectionObserver(entries => {
   entries.forEach((e, i) => {
     if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), i * 80); obs.unobserve(e.target); }
@@ -875,7 +1513,7 @@ if (big) {
   big.addEventListener('mouseenter', () => big.style.color = 'var(--wine-bright)');
   big.addEventListener('mouseleave', () => big.style.color = 'var(--line-2)');
 }
-initTasks();
+loadTasks();
 </script>
 <script>const PDI_PASS="pdi@fc2026";
 const PASS_KEY="pdi-access-v1";
